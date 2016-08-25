@@ -1,4 +1,14 @@
-raw_dir="data/"
-map_dir="results/map/"
-call_dir="results/call/"
-call_doc="doc/call/"
+# Folder variables
+TRUE_RAW_DIR = "data/fastq_raw/"
+
+RAW_DIR = "results/raw/"
+RAW_DOC = "doc/raw/"
+
+TRIM_DIR = "results/fastq_trimmed/"
+TRIM_DOC = "doc/fastqc_trimmed/"
+
+NORM_DIR = "results/fastq_norm/"
+NORM_DOC = "doc/fastq_norm/"
+
+ASSEMBLY_DIR = "results/assembly/"
+ASSEMBLY_DOC = "doc/results/"
