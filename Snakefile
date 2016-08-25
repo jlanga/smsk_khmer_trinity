@@ -11,6 +11,8 @@ snakefiles = "scripts/snakefiles/"
 include: snakefiles + "folders.snakefile"
 include: snakefiles + "clean.snakefile"
 include: snakefiles + "raw.snakefile"
+include: snakefiles + "qc.snakefile"
+
 
 rule all:
     input:
