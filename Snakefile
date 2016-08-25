@@ -7,9 +7,14 @@ snakefiles = "scripts/snakefiles/"
 include: snakefiles + "folders.snakefile"
 include: snakefiles + "clean.snakefile"
 include: snakefiles + "raw.snakefile"
-include: snakefiles + "map.snakefile"
-include: snakefiles + "call.snakefile"
 
 rule all:
     input:
-        call_doc + "call.html"
+        expand(
+            RAW_DOC + "{sample}_1_fastqc.html",
+            sample = config["samples_pe"]
+        ),
+        expand(
+            RAW_DOC + "{sample}_se_fastqc.html",
+            sample = config["samples_se"]
+        )
