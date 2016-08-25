@@ -4,6 +4,7 @@ rule clean:
             "{RAW_DIR} {RAW_DOC} "
             "{QC_DIR} {QC_DOC} "
             "{NORM_DIR} {NORM_DOC} "
+            "{ASSEMBLY_DIR} {ASSEMBLY_DOC }"
 
 
 
@@ -22,3 +23,7 @@ rule clean_qc:
 rule clean_diginorm:
     shell:
         "rm -r {NORM_DIR} {NORM_DOC} "
+
+rule clean_assembly:
+    shell:
+        "rm -rf {ASSEMBLY_DIR} {ASSEMBLY_DOC} "
