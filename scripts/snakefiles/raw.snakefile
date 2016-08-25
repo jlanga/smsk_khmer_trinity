@@ -5,8 +5,8 @@ rule raw_make_links_pe_sample:
         forward= lambda wildcards: config["samples_pe"][wildcards.sample]["forward"],
         reverse= lambda wildcards: config["samples_pe"][wildcards.sample]["reverse"]
     output:
-        forward= RAW_DIR + "{sample}_1.fq.gz",
-        reverse= RAW_DIR + "{sample}_2.fq.gz"
+        forward= protected(RAW_DIR + "{sample}_1.fq.gz"),
+        reverse= protected(RAW_DIR + "{sample}_2.fq.gz")
     log:
         RAW_DOC + "make_links_pe_{sample}.log"
     benchmark:
@@ -23,7 +23,7 @@ rule raw_make_links_se_sample:
     input:
         single= lambda wildcards: config["samples_se"][wildcards.sample]["single"],
     output:
-        single= RAW_DIR + "{sample}_se.fq.gz"
+        single= protected(RAW_DIR + "{sample}_se.fq.gz")
     log:
         RAW_DOC + "make_links_se_{sample}.log"
     benchmark:
@@ -40,10 +40,10 @@ rule raw_fastqc_pe_sample:
         forward = RAW_DIR + "{sample}_1.fq.gz",
         reverse = RAW_DIR + "{sample}_2.fq.gz"
     output:
-        html1 = RAW_DOC + "{sample}_1_fastqc.html",
-        html2 = RAW_DOC + "{sample}_2_fastqc.html",
-        zip1=  RAW_DOC + "{sample}_1_fastqc.zip",
-        zip2=  RAW_DOC + "{sample}_2_fastqc.zip"
+        html1= protected(RAW_DOC + "{sample}_1_fastqc.html"),
+        html2= protected(RAW_DOC + "{sample}_2_fastqc.html"),
+        zip1=  protected(RAW_DOC + "{sample}_1_fastqc.zip"),
+        zip2=  protected(RAW_DOC + "{sample}_2_fastqc.zip")
     threads:
         2
     params:
@@ -66,8 +66,8 @@ rule raw_fastqc_se_sample:
     input:
         fq = RAW_DIR + "{sample}_se.fq.gz",
     output:
-        html= RAW_DOC + "{sample}_se_fastqc.html",
-        zip=  RAW_DOC + "{sample}_se_fastqc.zip"
+        html= protected(RAW_DOC + "{sample}_se_fastqc.html"),
+        zip=  protected(RAW_DOC + "{sample}_se_fastqc.zip")
     params:
         outdir = RAW_DOC
     log:
