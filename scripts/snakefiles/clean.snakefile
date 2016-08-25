@@ -1,11 +1,24 @@
 rule clean:
     shell:
-        "rm -rf {RAW_DIR} {RAW_DOC} {QC_DIR} {QC_DOC}"
+        "rm -r "
+            "{RAW_DIR} {RAW_DOC} "
+            "{QC_DIR} {QC_DOC} "
+            "{NORM_DIR} {NORM_DOC} "
+
+
 
 rule clean_raw:
     shell:
-        "rm -rf {RAW_DIR} {RAW_DOC}"
+        "rm -r {RAW_DIR} {RAW_DOC} "
+
+
 
 rule clean_qc:
     shell:
-        "rm -rf {QC_DIR} {QC_DOC}"
+        "rm -r {QC_DIR} {QC_DOC} "
+
+
+
+rule clean_diginorm:
+    shell:
+        "rm -r {NORM_DIR} {NORM_DOC} "
