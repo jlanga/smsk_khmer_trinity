@@ -1,5 +1,4 @@
 # Folder variables
-TRUE_RAW_DIR = "data/fastq_raw/"
 
 RAW_DIR = "results/raw/"
 RAW_DOC = "doc/raw/"
