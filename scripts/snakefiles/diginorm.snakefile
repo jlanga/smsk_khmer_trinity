@@ -324,41 +324,52 @@ rule diginorm_fastqc_sample_pair:
 
 
 
-rule diginorm_report:
+rule diginorm_multiqc:
     input:
-        expand(
+        files_pe = expand(
             NORM_DOC + "{sample}.final.{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "pe_pe pe_se".split(),
             extension = "html zip".split()
         ),
-        expand(
+        files_se = expand(
             NORM_DOC + "{sample}.final.se_fastqc.{extension}",
             sample = SAMPLES_SE,
             extension = "html zip".split()
         )
+    output:
+        html= NORM_DOC + "multiqc_report.html"
+    params:
+        folder = QC_DOC
+    log:
+        QC_DOC + "multiqc.log"
+    benchmark:
+        QC_DOC + "multiqc.json"
+    shell:
+        "multiqc "
+            "--title Diginorm "
+            "--filename {output.html} "
+            "{params.folder} "
+        "2> {log}"
+
+
+
+rule diginorm_doc:
+    input:
+        html= NORM_DOC + "multiqc_report.html"
 
 
 
 rule diginorm:
+    '''diginorm_results + diginorm_doc'''
     input:
-        expand(
+        files_pe = expand(
             NORM_DIR + "{sample}.final.{pair}.fq.gz",
             sample = SAMPLES_PE,
             pair = PAIRS
         ),
-        expand(
+        files_se = expand(
             NORM_DIR + "{sample}.final.se.fq.gz",
             sample = SAMPLES_SE
         ),
-        expand(
-            NORM_DOC + "{sample}.final.{pair}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            pair = "pe_pe pe_se".split(),
-            extension = "html zip".split()
-        ),
-        expand(
-            NORM_DOC + "{sample}.final.se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = "html zip".split()
-        )
+        html= NORM_DOC + "multiqc_report.html"

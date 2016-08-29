@@ -10,4 +10,4 @@ NORM_DIR = "results/diginorm/"
 NORM_DOC = "doc/diginorm/"
 
 ASSEMBLY_DIR = "results/assembly/"
-ASSEMBLY_DOC = "doc/assembl/"
+ASSEMBLY_DOC = "doc/assembly/"

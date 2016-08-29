@@ -7,6 +7,8 @@ pip3 install \
     pyyaml \
     docutils
 
+pip install \
+    multiqc
 
 
 ## 2. Homebrew packages

@@ -22,4 +22,7 @@ include: snakefiles + "assembly.snakefile"
 
 rule all:
     input:
-        ASSEMBLY_DIR + "Trinity.fasta"
+        ASSEMBLY_DIR + "Trinity.fasta",
+        RAW_DOC + "multiqc_report.html",
+        QC_DOC + "multiqc_report.html",
+        NORM_DOC + "multiqc_report.html"
