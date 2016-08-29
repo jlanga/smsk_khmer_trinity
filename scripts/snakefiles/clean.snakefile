@@ -4,7 +4,7 @@ rule clean:
             "{RAW_DIR} {RAW_DOC} "
             "{QC_DIR} {QC_DOC} "
             "{NORM_DIR} {NORM_DOC} "
-            "{ASSEMBLY_DIR} {ASSEMBLY_DOC }"
+            "{ASSEMBLY_DIR} {ASSEMBLY_DOC}"
 
 
 
