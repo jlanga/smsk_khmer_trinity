@@ -338,7 +338,7 @@ rule diginorm_multiqc:
             extension = "html zip".split()
         )
     output:
-        html= NORM_DOC + "multiqc_report.html"
+        html= protected(NORM_DOC + "multiqc_report.html")
     params:
         folder = QC_DOC
     log:
