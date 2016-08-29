@@ -182,7 +182,7 @@ rule qc_multiqc:
             extension = "html zip".split()
         )
     output:
-        html= QC_DOC + "multiqc_report.html"
+        html= protected(QC_DOC + "multiqc_report.html")
     params:
         folder = QC_DOC
     log:

@@ -98,7 +98,7 @@ rule raw_multiqc:
             extension = "html zip".split()
         )
     output:
-        html = RAW_DOC + "multiqc_report.html"
+        html = protected(RAW_DOC + "multiqc_report.html")
     params:
         folder = RAW_DOC
     log:
