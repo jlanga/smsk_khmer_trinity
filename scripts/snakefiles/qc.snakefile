@@ -126,16 +126,14 @@ rule qc_interleave_pe_pe:
 
 
 rule qc_results:
+    '''Generate only the resulting files, not the reports'''
     input:
-        expand(
-            QC_DIR + "{sample}.final.pe_pe.fq.gz",
-            sample = SAMPLES_PE
+        pe_files = expand(
+            QC_DIR + "{sample}.final.{pair}.fq.gz",
+            sample = SAMPLES_PE,
+            pair = "pe_pe pe_se".split()
         ),
-        expand(
-            QC_DIR + "{sample}.final.pe_se.fq.gz",
-            sample = SAMPLES_PE
-        ),
-        expand(
+        se_files = expand(
             QC_DIR + "{sample}.final.se.fq.gz",
             sample = SAMPLES_SE
         )
@@ -169,45 +167,54 @@ rule qc_fastqc_sample_pair:
         "> {log} 2>&1"
 
 
-rule qc_report:
+
+rule qc_multiqc:
     input:
-        expand(
+        pe_files = expand(
             QC_DOC + "{sample}.final.{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "pe_pe pe_se".split(),
             extension = "html zip".split()
         ),
-        expand(
+        se_files = expand(
             QC_DOC + "{sample}.final.se_fastqc.{extension}",
             sample = SAMPLES_SE,
             extension = "html zip".split()
         )
+    output:
+        html= QC_DOC + "multiqc_report.html"
+    params:
+        folder = QC_DOC
+    log:
+        QC_DOC + "multiqc.log"
+    benchmark:
+        QC_DOC + "multiqc.json"
+    shell:
+        "multiqc "
+            "--title QC "
+            "--filename {output.html} "
+            "{params.folder} "
+        "2> {log}"
+
+
+
+rule qc_doc:
+    input:
+        html= QC_DOC + "multiqc_report.html"
 
 
 
 rule qc:
-    """qc_results + qc_report"""
+    """qc_results + qc_doc"""
     input:
-        expand(
+        pe_files = expand(
             QC_DOC + "{sample}.final.{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "pe_pe pe_se".split(),
             extension = "html zip".split()
         ),
-        expand(
-            QC_DOC + "{sample}.final.se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = "html zip".split()
-        ),
-        expand(
-            QC_DIR + "{sample}.final.pe_pe.fq.gz",
-            sample = SAMPLES_PE
-        ),
-        expand(
-            QC_DIR + "{sample}.final.pe_se.fq.gz",
-            sample = SAMPLES_PE
-        ),
-        expand(
+        se_files = expand(
             QC_DIR + "{sample}.final.se.fq.gz",
             sample = SAMPLES_SE
-        )
+        ),
+        report = QC_DOC + "multiqc_report.html"

@@ -83,6 +83,37 @@ rule raw_fastqc_se_sample:
 
 
 
+rule raw_multiqc:
+    '''MultiQC report over the FASTQC ones'''
+    input:
+        pe_files = expand(
+            RAW_DOC + "{sample}_{pair}_fastqc.{extension}",
+            sample = SAMPLES_PE,
+            pair = "1 2".split(),
+            extension = "html zip".split()
+        ),
+        se_files = expand(
+            RAW_DOC + "{sample}_se_fastqc.{extension}",
+            sample = SAMPLES_SE,
+            extension = "html zip".split()
+        )
+    output:
+        html = RAW_DOC + "multiqc_report.html"
+    params:
+        folder = RAW_DOC
+    log:
+        RAW_DOC + "multiqc.log"
+    benchmark:
+        RAW_DOC + "multiqc.json"
+    shell:
+        "multiqc "
+            "--title Raw "
+            "--filename {output.html} "
+            "{params.folder} "
+        "2> {log}"
+
+
+
 rule raw_results:
     """Checkpoint to generate all the links for raw data"""
     input:
@@ -101,40 +132,20 @@ rule raw_results:
 rule raw_doc:
     """Checkpoint to generate all reports for raw data"""
     input:
-        expand(
-            RAW_DOC + "{sample}_{end}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            end = "1 2".split(),
-            extension = ["html", "zip"]
-        ),
-        expand(
-            RAW_DOC + "{sample}_se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = ["html", "zip"]
-        )
+        html = RAW_DOC + "multiqc_report.html"
 
 
 
 rule raw:
     """Make both results + reports for raw (raw = raw_doc)"""
     input:
-        expand(
+        pe_files = expand(
             RAW_DIR + "{sample}_{end}.fq.gz",
             sample = SAMPLES_PE,
             end = "1 2".split()
         ),
-        expand(
+        se_files = expand(
             RAW_DIR + "{sample}_se.fq.gz",
             sample = SAMPLES_SE
         ),
-        expand(
-            RAW_DOC + "{sample}_{end}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            end = "1 2".split(),
-            extension = ["html", "zip"]
-        ),
-        expand(
-            RAW_DOC + "{sample}_se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = ["html", "zip"]
-        )
+        html = RAW_DOC + "multiqc_report.html"
