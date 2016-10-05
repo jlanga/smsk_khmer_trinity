@@ -1,6 +1,6 @@
 # smsk: A Snakemake skeleton to jumpstart projects
 
-[![Build Status](https://travis-ci.org/jlanga/smsk.svg?branch=master)](https://travis-ci.org/jlanga/smsk)
+[![Build Status](https://travis-ci.org/jlanga/smsk_khmer_trinity.svg?branch=master)](https://travis-ci.org/jlanga/smsk_khmer_trinity)
 
 ## 1. Description
 
@@ -91,7 +91,7 @@ smsk
         http://bin1.com/bin1.tar.gz
     tar xvf src/bin1.tar.gz
     cp src/bin1/bin1 bin/ # or link
-    
+
     # Tarball contains the source
     wget \
         --continue \
