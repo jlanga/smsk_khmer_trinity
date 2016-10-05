@@ -23,15 +23,15 @@ rule diginorm_load_into_counting:
     benchmark:
         NORM_DOC + "load_into_counting.json"
     params:
-        ksize=    config["diginorm_params"]["ksize"],
-        hashsize= config["diginorm_params"]["hashsize"],
-        n_hashes= config["diginorm_params"]["n_hashes"]
+        ksize= config["diginorm_params"]["ksize"],
+        max_table_size= config["diginorm_params"]["max_table_size"],
+        n_tables= config["diginorm_params"]["n_tables"]
     shell:
         """
         load-into-counting.py \
             --ksize {params.ksize} \
-            --n_hashes {params.n_hashes} \
-            --hashsize {params.hashsize} \
+            --n_tables {params.n_tables} \
+            --max-tablesize {params.max_table_size} \
             --no-bigcount \
             {output.table} \
             {input.fastqs} \
@@ -55,8 +55,8 @@ rule diginorm_normalize_by_median_sample_pe_pe:
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
-        n_hashes = config["diginorm_params"]["n_hashes"],
-        hashsize = config["diginorm_params"]["hashsize"],
+        n_tables = config["diginorm_params"]["n_tables"],
+        max_table_size = config["diginorm_params"]["max_table_size"],
         keep_fq  = "{sample}.final.pe_pe.fq.gz.keep"
     log:
         NORM_DOC + "normalize_by_median_{sample}.pe_pe.log"
@@ -66,11 +66,11 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         """
         normalize-by-median.py \
             --ksize {params.ksize} \
-            --n_hashes {params.n_hashes} \
-            --hashsize {params.hashsize} \
+            --n_tables {params.n_tables} \
+            --max-tablesize {params.max_table_size} \
             --cutoff {params.cutoff} \
             --paired \
-            --loadhash {input.table} \
+            --loadgraph {input.table} \
             {input.fastq} \
         > {log} 2>&1
 
@@ -99,8 +99,8 @@ rule diginorm_normalize_by_median_sample_pe_se:
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
-        n_hashes = config["diginorm_params"]["n_hashes"],
-        hashsize = config["diginorm_params"]["hashsize"],
+        n_tables = config["diginorm_params"]["n_tables"],
+        max_table_size = config["diginorm_params"]["max_table_size"],
         keep_fq  = "{sample}.final.pe_se.fq.gz.keep"
     log:
         NORM_DOC + "normalize_by_median_{sample}_pe_se.log"
@@ -110,10 +110,10 @@ rule diginorm_normalize_by_median_sample_pe_se:
         """
         normalize-by-median.py \
             --ksize {params.ksize} \
-            --n_hashes {params.n_hashes} \
-            --hashsize {params.hashsize} \
+            --n_tables {params.n_tables} \
+            --max-tablesize {params.max_table_size} \
             --cutoff {params.cutoff} \
-            --loadhash {input.table} \
+            --loadgraph {input.table} \
             {input.fastq} \
         > {log} 2>&1
 
@@ -142,8 +142,8 @@ rule diginorm_normalize_by_median_sample_se:
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
-        n_hashes = config["diginorm_params"]["n_hashes"],
-        hashsize = config["diginorm_params"]["hashsize"],
+        n_tables = config["diginorm_params"]["n_tables"],
+        max_table_size = config["diginorm_params"]["max_table_size"],
         keep_fq  = "{sample}.final.se.fq.gz.keep"
     log:
         NORM_DOC + "normalize_by_median_{sample}_se.log"
@@ -153,10 +153,10 @@ rule diginorm_normalize_by_median_sample_se:
         """
         normalize-by-median.py \
             --ksize {params.ksize} \
-            --n_hashes {params.n_hashes} \
-            --hashsize {params.hashsize} \
+            --n_tables {params.n_tables} \
+            --max-tablesize {params.max_table_size} \
             --cutoff {params.cutoff} \
-            --loadhash {input.table} \
+            --loadgraph {input.table} \
             {input.fastq} \
         > {log} 2>&1
 
