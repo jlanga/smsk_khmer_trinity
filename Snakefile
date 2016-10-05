@@ -12,12 +12,12 @@ ALL_THREADS = 24
 
 snakefiles = "scripts/snakefiles/"
 
-include: snakefiles + "folders.snakefile"
-include: snakefiles + "clean.snakefile"
-include: snakefiles + "raw.snakefile"
-include: snakefiles + "qc.snakefile"
-include: snakefiles + "diginorm.snakefile"
-include: snakefiles + "assembly.snakefile"
+include: snakefiles + "folders"
+include: snakefiles + "clean"
+include: snakefiles + "raw"
+include: snakefiles + "qc"
+include: snakefiles + "diginorm"
+include: snakefiles + "assembly"
 
 
 rule all:

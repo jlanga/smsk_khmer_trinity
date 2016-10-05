@@ -1,7 +1,7 @@
 # This file must be used with "source bin/activate" *from bash*
 # you cannot run it directly
 
-ENV_NAME="smsk" # name your environment
+ENV_NAME="smsk_khmer_trinity" # name your environment
 
 # Rationale of deactivate:
 # if $_OLD_VARIABLE exists:
