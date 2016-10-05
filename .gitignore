@@ -3,3 +3,5 @@
 bin/py3/
 results/*
 doc/*
+bin/Trinity
+src/
