@@ -16,12 +16,10 @@ This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
 
 Just follow what is inside the `.travis.yml`
 
-1. Update your system:
+1. Update your system (Ubuntu Trusty in this case):
     ```sh
     sudo apt-get -qq update
     sudo apt-get install -y build-essential curl git
-    "source bin/activate",
-
     ```
 
 2. Clone this repo and get inside
@@ -57,14 +55,14 @@ Just follow what is inside the `.travis.yml`
 The hierarchy of the folder is the one described in [A Quick Guide to Organizing Computational Biology Projects](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000424):
 
 ```
-smsk
+smsk_khmer_trinity
 ├── .linuxbrew: brew files
-├── bin: your binaries and virtualenv related files.
-├── data: raw data, hopefully links to backuped data.
+├── bin: binaries and activate files.
+├── data: raw data, hopefully links to backup data.
 ├── doc: logs, reports and figures.
 ├── README.md
 ├── results: processed data.
-├── scripts: python, R, etc scripts to porcess data.
+├── scripts: snakefiles, installing scriptos, python, R, etc scripts to process data.
 └── src: additional source code, tarballs, etc.
 ```
 
@@ -74,7 +72,7 @@ smsk
 
 "Just" edit the `config.yaml` with the paths to your fastq files and change parameters. In the section `diginorm_params` \ `max_table_size` type `4e9` because it's anoyingly slow to do tests with 16Gb of RAM.
 
-Also raise Trinity's maximum memory usage in consequence.
+Also raise Trinity's maximum memory usage if you need it.
 
 
 
