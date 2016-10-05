@@ -4,9 +4,12 @@ language: bash
 
 before_install:
   - sudo apt-get -qq update
-  - sudo apt-get install -y build-essential curl git python-setuptools ruby python3-pip
-  - virtualenv --python=python3 bin/py3
-  - git clone https://github.com/Linuxbrew/brew.git .linuxbrew
+  - sudo apt-get install -y build-essential curl git
+  - source bin/activate
+  - bash scripts/install/brew.sh
+  - bash scripts/install/from_brew.sh
+  - bash scripts/install/from_pip3.sh
+  - bash scripts/install/from_tarball.sh
 
 script:
-  - source bin/activate; bash scripts/install_software.sh; snakemake
+  - snakemake -j 8
