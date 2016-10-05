@@ -26,4 +26,4 @@ rule clean_diginorm:
 
 rule clean_assembly:
     shell:
-        "rm -rf {ASSEMBLY_DIR} {ASSEMBLY_DOC} "
+        "rm -r {ASSEMBLY_DIR} {ASSEMBLY_DOC} "
