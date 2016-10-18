@@ -1,5 +1,6 @@
 rule raw_make_links_pe_sample:
-    """Make a link next to the original file, with a prettier name than default.
+    """
+    Make a link next to the original file, with a prettier name than default.
     """
     input:
         forward= lambda wildcards: config["samples_pe"][wildcards.sample]["forward"],
@@ -18,7 +19,8 @@ rule raw_make_links_pe_sample:
 
 
 rule raw_make_links_se_sample:
-    """Make a link next to the original file, with a prettier name than default.
+    """
+    Make a link next to the original file, with a prettier name than default.
     """
     input:
         single= lambda wildcards: config["samples_se"][wildcards.sample]["single"],

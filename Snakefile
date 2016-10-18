@@ -10,7 +10,7 @@ PAIRS = ["pe_pe", "pe_se"]
 BLOCK_THREADS = 99999
 ALL_THREADS = 24
 
-snakefiles = "scripts/snakefiles/"
+snakefiles = "bin/snakefiles/"
 
 include: snakefiles + "folders"
 include: snakefiles + "clean"
