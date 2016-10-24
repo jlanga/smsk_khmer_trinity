@@ -98,7 +98,7 @@ rule assembly_run_trinity:
         ASSEMBLY_DOC + "run_trinity.json"
     shell:
         """
-        ./bin/Trinity \
+        Trinity \
             --seqType fq \
             --max_memory {params.memory} \
             --left {input.left} \
