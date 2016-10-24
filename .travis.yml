@@ -9,7 +9,6 @@ before_install:
   - bash bin/install/brew.sh
   - bash bin/install/from_brew.sh
   - bash bin/install/from_pip3.sh
-  - bash bin/install/from_tarball.sh
 
 script:
-  - snakemake -j 24
+  - snakemake -j
