@@ -13,21 +13,17 @@ rule assembly_split_pe_files:
         left  = "{sample}.final.pe_pe.fq.gz.1",
         right = "{sample}.final.pe_pe.fq.gz.2"
     log:
-        ASSEMBLY_DOC + "split_pe_files_{sample}.log"
+        ASSEMBLY_DIR + "split_pe_files_{sample}.log"
     benchmark:
-        ASSEMBLY_DOC + "split_pe_files_{sample}.json"
+        ASSEMBLY_DIR + "split_pe_files_{sample}.json"
     shell:
-        """
-        split-paired-reads.py \
-            {input.fastq_pe} \
-        > {log} 2>&1
-
-        pigz -9c {params.left}  > {output.left}
-        pigz -9c {params.right} > {output.right}
-
-        rm {params.left} {params.right}
-        """
-
+        "split-paired-reads.py "
+            "{input.fastq_pe} "
+        "> {log} 2>&1 ; "
+        "pigz --best --stdout {params.left}  > {output.left} ; "
+        "pigz --best --stdout {params.right} > {output.right} ; "
+        "rm {params.left} {params.right} "
+        
 
 
 rule assembly_merge_right_and_left:
@@ -61,16 +57,14 @@ rule assembly_merge_right_and_left:
         left=  temp(ASSEMBLY_DIR + "left.fq"),
         right= temp(ASSEMBLY_DIR + "right.fq")
     threads:
-        1
+        2
     log:
-        ASSEMBLY_DOC + "merge_right_and_left.log"
+        ASSEMBLY_DIR + "merge_right_and_left.log"
     benchmark:
-        ASSEMBLY_DOC + "merge_right_and_left.json"
+        ASSEMBLY_DIR + "merge_right_and_left.json"
     shell:
-        """
-        gzip -dfc {input.forward} {input.unpaired} > {output.left} 2> {log}
-        gzip -dfc {input.reverse} > {output.right} 2>> {log}
-        """
+        "pigz --decompress --force --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} ; "
+        "pigz --decompress --force --stdout {input.reverse} > {output.right} 2>> {log} "
 
 
 
@@ -93,22 +87,18 @@ rule assembly_run_trinity:
         memory= config["trinity_params"]["memory"],
         outdir= ASSEMBLY_DIR + "trinity_out_dir"
     log:
-        ASSEMBLY_DOC + "run_trinity.log"
+        ASSEMBLY_DIR + "run_trinity.log"
     benchmark:
-        ASSEMBLY_DOC + "run_trinity.json"
+        ASSEMBLY_DIR + "run_trinity.json"
     shell:
-        """
-        Trinity \
-            --seqType fq \
-            --max_memory {params.memory} \
-            --left {input.left} \
-            --right {input.right} \
-            --CPU {threads} \
-            --full_cleanup \
-            --output {params.outdir} \
-        > {log}
-
-        mv {params.outdir}.Trinity.fasta {output.fasta}
-
-        rm {input.left}.readcount {input.right}.readcount
-        """
+        "Trinity "
+            "--seqType fq "
+            "--max_memory {params.memory} "
+            "--left {input.left} "
+            "--right {input.right} "
+            "--CPU {threads} "
+            "--full_cleanup "
+            "--output {params.outdir} "
+        "> {log} ; "
+        "mv {params.outdir}.Trinity.fasta {output.fasta} ; "
+        "rm {input.left}.readcount {input.right}.readcount"

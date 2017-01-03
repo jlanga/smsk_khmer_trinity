@@ -30,32 +30,29 @@ rule qc_trimmomatic_pe:
         phred       = lambda wildcards: config["samples_pe"][wildcards.sample]["phred"],
         trimmomatic_params = config["trimmomatic_params"]
     log:
-        QC_DOC + "trimmomatic_pe_{sample}.log"
+        QC_DIR + "trimmomatic_pe_{sample}.log"
     benchmark:
-        QC_DOC + "trimmomatic_pe_{sample}.json"
+        QC_DIR + "trimmomatic_pe_{sample}.json"
     threads:
-        24 # I've been able to work with pigz and 24 trimmomatic threads.
+        ALL_THREADS
     shell:
-        """
-        trimmomatic PE \
-            -threads {threads} \
-            -{params.phred} \
-            <(pigz -dc {input.forward} ) \
-            <(pigz -dc {input.reverse} ) \
-            >(cut -f 1 -d " " | pigz -9 > {output.forward} ) \
-            {params.unpaired_1} \
-            >(cut -f 1 -d " " | pigz -9 > {output.reverse} ) \
-            {params.unpaired_2} \
-            ILLUMINACLIP:{params.adaptor}:2:30:10 \
-            {params.trimmomatic_params} \
-        2> {log}
-
-        zcat {params.unpaired_1} {params.unpaired_2} |
-        cut -f 1 -d " " |
-        pigz -9 > {output.unpaired}
-
-        rm {params.unpaired_1} {params.unpaired_2}
-        """
+        "trimmomatic PE "
+            "-threads {threads} "
+            "-{params.phred} "
+            "<(pigz -dc {input.forward}) "
+            "<(pigz -dc {input.reverse}) "
+            ">(cut -f 1 -d \" \" | pigz -9 > {output.forward}) "
+            "{params.unpaired_1} "
+            ">(cut -f 1 -d \" \" | pigz -9 > {output.reverse}) "
+            "{params.unpaired_2} "
+            "ILLUMINACLIP:{params.adaptor}:2:30:10 "
+            "{params.trimmomatic_params} "
+        "2> {log} ; "
+        "pigz --decompress --stdout {params.unpaired_1} {params.unpaired_2} "
+            "| cut -f 1 -d \" \" "
+            "| pigz -9 "
+        "> {output.unpaired} ; "
+        "rm {params.unpaired_1} {params.unpaired_2}"
 
 
 
@@ -79,22 +76,20 @@ rule qc_trimmomatic_se:
         phred = lambda wildcards: config["samples_se"][wildcards.sample]["phred"],
         trimmomatic_params = config["trimmomatic_params"]
     log:
-        QC_DOC + "trimmomatic_se_{sample}.log"
+        QC_DIR + "trimmomatic_se_{sample}.log"
     benchmark:
-        QC_DOC + "trimmomatic_se_{sample}.json"
+        QC_DIR + "trimmomatic_se_{sample}.json"
     threads:
-        8
+        ALL_THREADS
     shell:
-        """
-        trimmomatic SE \
-            -threads {threads} \
-            -{params.phred} \
-            <(pigz -dc {input.single}) \
-            >(cut -f 1 -d " " | pigz -9 > {output.single}) \
-            ILLUMINACLIP:{params.adaptor}:2:30:10 \
-            {params.trimmomatic_params} \
-        2> {log}
-        """
+        "trimmomatic SE "
+            "-threads {threads} "
+            "-{params.phred} "
+            "<(pigz -dc {input.single}) "
+            ">(cut -f 1 -d \" \" | pigz -9 > {output.single}) "
+            "ILLUMINACLIP:{params.adaptor}:2:30:10 "
+            "{params.trimmomatic_params} "
+        "2> {log}"
 
 
 
@@ -111,17 +106,16 @@ rule qc_interleave_pe_pe:
     threads:
         2 # One for the pairer and other for gzip
     log:
-        QC_DOC + "interleave_pe_{sample}.log"
+        QC_DIR + "interleave_pe_{sample}.log"
     benchmark:
-        QC_DOC + "interleave_pe_{sample}.json"
+        QC_DIR + "interleave_pe_{sample}.json"
     shell:
-        """
-        ( interleave-reads.py \
-            {input.forward} \
-            {input.reverse} |
-        pigz -9 > {output.interleaved} ) \
-        2> {log}
-        """
+        "(interleave-reads.py "
+            "{input.forward} "
+            "{input.reverse} "
+            "| pigz --best "
+        "> {output.interleaved}) "
+        "2> {log}"
 
 
 
@@ -149,16 +143,16 @@ rule qc_fastqc_sample_pair:
     input:
         fastq = QC_DIR + "{sample}.final.{pair}.fq.gz"
     output:
-        zip   = protected(QC_DOC + "{sample}.final.{pair}_fastqc.zip"),
-        html  = protected(QC_DOC + "{sample}.final.{pair}_fastqc.html")
+        zip   = protected(QC_DIR + "{sample}.final.{pair}_fastqc.zip"),
+        html  = protected(QC_DIR + "{sample}.final.{pair}_fastqc.html")
     threads:
         1
     params:
-        outdir = QC_DOC
+        outdir = QC_DIR
     log:
-        QC_DOC + "fastqc_{sample}_{pair}.log"
+        QC_DIR + "fastqc_{sample}_{pair}.log"
     benchmark:
-        QC_DOC + "fastqc_{sample}_{pair}.json"
+        QC_DIR + "fastqc_{sample}_{pair}.json"
     shell:
         "fastqc "
             "--nogroup "
@@ -171,24 +165,26 @@ rule qc_fastqc_sample_pair:
 rule qc_multiqc:
     input:
         pe_files = expand(
-            QC_DOC + "{sample}.final.{pair}_fastqc.{extension}",
+            QC_DIR + "{sample}.final.{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "pe_pe pe_se".split(),
             extension = "html zip".split()
         ),
         se_files = expand(
-            QC_DOC + "{sample}.final.se_fastqc.{extension}",
+            QC_DIR + "{sample}.final.se_fastqc.{extension}",
             sample = SAMPLES_SE,
             extension = "html zip".split()
         )
     output:
-        html= protected(QC_DOC + "multiqc_report.html")
+        html= protected(QC_DIR + "multiqc_report.html")
+    threads:
+        1
     params:
-        folder = QC_DOC
+        folder = QC_DIR
     log:
-        QC_DOC + "multiqc.log"
+        QC_DIR + "multiqc.log"
     benchmark:
-        QC_DOC + "multiqc.json"
+        QC_DIR + "multiqc.json"
     shell:
         "multiqc "
             "--title QC "
@@ -200,7 +196,7 @@ rule qc_multiqc:
 
 rule qc_doc:
     input:
-        html= QC_DOC + "multiqc_report.html"
+        html= QC_DIR + "multiqc_report.html"
 
 
 
@@ -208,7 +204,7 @@ rule qc:
     """qc_results + qc_doc"""
     input:
         pe_files = expand(
-            QC_DOC + "{sample}.final.{pair}_fastqc.{extension}",
+            QC_DIR + "{sample}.final.{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "pe_pe pe_se".split(),
             extension = "html zip".split()
@@ -217,4 +213,4 @@ rule qc:
             QC_DIR + "{sample}.final.se.fq.gz",
             sample = SAMPLES_SE
         ),
-        report = QC_DOC + "multiqc_report.html"
+        report = QC_DIR + "multiqc_report.html"
