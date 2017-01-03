@@ -9,11 +9,11 @@ rule raw_make_links_pe_sample:
         forward= protected(RAW_DIR + "{sample}_1.fq.gz"),
         reverse= protected(RAW_DIR + "{sample}_2.fq.gz")
     log:
-        RAW_DOC + "make_links_pe_{sample}.log"
+        RAW_DIR + "make_links_pe_{sample}.log"
     benchmark:
-        RAW_DOC + "make_links_pe_{sample}.json"
+        RAW_DIR + "make_links_pe_{sample}.json"
     shell:
-        "ln -s $(readlink -f {input.forward}) {output.forward} 2> {log};"
+        "ln -s $(readlink -f {input.forward}) {output.forward} 2> {log}; "
         "ln -s $(readlink -f {input.reverse}) {output.reverse} 2>> {log}"
 
 
@@ -27,13 +27,11 @@ rule raw_make_links_se_sample:
     output:
         single= protected(RAW_DIR + "{sample}_se.fq.gz")
     log:
-        RAW_DOC + "make_links_se_{sample}.log"
+        RAW_DIR + "make_links_se_{sample}.log"
     benchmark:
-        RAW_DOC + "make_links_se_{sample}.json"
+        RAW_DIR + "make_links_se_{sample}.json"
     shell:
-        """
-        ln -s $(readlink -f {input.single}) {output.single} 2>  {log}
-        """
+        "ln -s $(readlink -f {input.single}) {output.single} 2> {log}"
 
 
 rule raw_fastqc_pe_sample:
@@ -42,18 +40,18 @@ rule raw_fastqc_pe_sample:
         forward = RAW_DIR + "{sample}_1.fq.gz",
         reverse = RAW_DIR + "{sample}_2.fq.gz"
     output:
-        html1= protected(RAW_DOC + "{sample}_1_fastqc.html"),
-        html2= protected(RAW_DOC + "{sample}_2_fastqc.html"),
-        zip1=  protected(RAW_DOC + "{sample}_1_fastqc.zip"),
-        zip2=  protected(RAW_DOC + "{sample}_2_fastqc.zip")
+        html1= protected(RAW_DIR + "{sample}_1_fastqc.html"),
+        html2= protected(RAW_DIR + "{sample}_2_fastqc.html"),
+        zip1=  protected(RAW_DIR + "{sample}_1_fastqc.zip"),
+        zip2=  protected(RAW_DIR + "{sample}_2_fastqc.zip")
     threads:
         2
     params:
-        outdir = RAW_DOC
+        outdir = RAW_DIR
     log:
-        RAW_DOC + "fastqc_pe_{sample}.log"
+        RAW_DIR + "fastqc_pe_{sample}.log"
     benchmark:
-        RAW_DOC + "fastqc_pe_{sample}.json"
+        RAW_DIR + "fastqc_pe_{sample}.json"
     shell:
         "fastqc "
             "--nogroup "
@@ -68,14 +66,14 @@ rule raw_fastqc_se_sample:
     input:
         fq = RAW_DIR + "{sample}_se.fq.gz",
     output:
-        html= protected(RAW_DOC + "{sample}_se_fastqc.html"),
-        zip=  protected(RAW_DOC + "{sample}_se_fastqc.zip")
+        html= protected(RAW_DIR + "{sample}_se_fastqc.html"),
+        zip=  protected(RAW_DIR + "{sample}_se_fastqc.zip")
     params:
-        outdir = RAW_DOC
+        outdir = RAW_DIR
     log:
-        RAW_DOC + "fastqc_se_{sample}.log"
+        RAW_DIR + "fastqc_se_{sample}.log"
     benchmark:
-        RAW_DOC + "fastqc_se_{sample}.json"
+        RAW_DIR + "fastqc_se_{sample}.json"
     shell:
         "fastqc "
             "--nogroup "
@@ -89,24 +87,24 @@ rule raw_multiqc:
     '''MultiQC report over the FASTQC ones'''
     input:
         pe_files = expand(
-            RAW_DOC + "{sample}_{pair}_fastqc.{extension}",
+            RAW_DIR + "{sample}_{pair}_fastqc.{extension}",
             sample = SAMPLES_PE,
             pair = "1 2".split(),
             extension = "html zip".split()
         ),
         se_files = expand(
-            RAW_DOC + "{sample}_se_fastqc.{extension}",
+            RAW_DIR + "{sample}_se_fastqc.{extension}",
             sample = SAMPLES_SE,
             extension = "html zip".split()
         )
     output:
-        html = protected(RAW_DOC + "multiqc_report.html")
+        html = protected(RAW_DIR + "multiqc_report.html")
     params:
-        folder = RAW_DOC
+        folder = RAW_DIR
     log:
-        RAW_DOC + "multiqc.log"
+        RAW_DIR + "multiqc.log"
     benchmark:
-        RAW_DOC + "multiqc.json"
+        RAW_DIR + "multiqc.json"
     shell:
         "multiqc "
             "--title Raw "
@@ -134,7 +132,7 @@ rule raw_results:
 rule raw_doc:
     """Checkpoint to generate all reports for raw data"""
     input:
-        html = RAW_DOC + "multiqc_report.html"
+        html = RAW_DIR + "multiqc_report.html"
 
 
 
@@ -150,4 +148,4 @@ rule raw:
             RAW_DIR + "{sample}_se.fq.gz",
             sample = SAMPLES_SE
         ),
-        html = RAW_DOC + "multiqc_report.html"
+        html = RAW_DIR + "multiqc_report.html"
