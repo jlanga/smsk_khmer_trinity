@@ -18,6 +18,8 @@ rule diginorm_load_into_counting:
         info  = temp(NORM_DIR + "diginorm_table.kh.info")
     threads:
         ALL_THREADS
+    priority:
+        50
     log:
         NORM_DIR + "load_into_counting.log"
     benchmark:
@@ -51,12 +53,13 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         fastq = temp(NORM_DIR + "{sample}.keep.pe_pe.fq.gz")
     threads:
         ALL_THREADS
+    priority:
+        50
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
         n_tables = config["diginorm_params"]["n_tables"],
         max_table_size = config["diginorm_params"]["max_table_size"],
-        keep_fq  = "{sample}.final.pe_pe.fq.gz.keep"
     log:
         NORM_DIR + "normalize_by_median_{sample}.pe_pe.log"
     benchmark:
@@ -69,15 +72,9 @@ rule diginorm_normalize_by_median_sample_pe_pe:
             "--cutoff {params.cutoff} "
             "--paired "
             "--loadgraph {input.table} "
-            "{input.fastq} "
-        "> {log} 2>&1 ; "
-        "pigz "
-            "--best "
-            "--stdout " 
-            "{params.keep_fq} "
-        "> {output.fastq} "
-        "2>> {log} ; "
-        "rm {params.keep_fq}"
+            "--output >(pigz --best > {output.fastq}) "
+            "<(pigz --decompress --stdout {input.fastq}) "
+        "> {log} 2>&1 "
 
 
 
@@ -93,12 +90,13 @@ rule diginorm_normalize_by_median_sample_pe_se:
         fastq = temp(NORM_DIR + "{sample}.keep.pe_se.fq.gz")
     threads:
         ALL_THREADS
+    priority:
+        50
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
         n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"],
-        keep_fq  = "{sample}.final.pe_se.fq.gz.keep"
+        max_table_size = config["diginorm_params"]["max_table_size"]
     log:
         NORM_DIR + "normalize_by_median_{sample}_pe_se.log"
     benchmark:
@@ -110,15 +108,9 @@ rule diginorm_normalize_by_median_sample_pe_se:
             "--max-tablesize {params.max_table_size} "
             "--cutoff {params.cutoff} "
             "--loadgraph {input.table} "
-            "{input.fastq} "
-        "> {log} 2>&1 ; "
-        "pigz "
-            "--best "
-            "--stdout "
-            "{params.keep_fq} "
-        "> {output.fastq} "
-        "2>> {log} ; "
-        "rm {params.keep_fq}"
+            "--output >(pigz --best > {output.fastq}) "
+            "<(pigz --decompress --stdout {input.fastq}) "
+        "> {log} 2>&1"
 
 
 
@@ -134,12 +126,13 @@ rule diginorm_normalize_by_median_sample_se:
         fastq = temp(NORM_DIR + "{sample}.keep.se.fq.gz")
     threads:
         ALL_THREADS
+    priority:
+        50
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
         n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"],
-        keep_fq  = "{sample}.final.se.fq.gz.keep"
+        max_table_size = config["diginorm_params"]["max_table_size"]
     log:
         NORM_DIR + "normalize_by_median_{sample}_se.log"
     benchmark:
@@ -151,15 +144,10 @@ rule diginorm_normalize_by_median_sample_se:
             "--max-tablesize {params.max_table_size} "
             "--cutoff {params.cutoff} "
             "--loadgraph {input.table} "
-            "{input.fastq} "
-        "> {log} 2>&1 ; "
-        "pigz "
-            "--best "
-            "--stdout "
-            "{params.keep_fq} "
-        "> {output.fastq} "
-        "2>> {log} ; "
-        "rm {params.keep_fq}"
+            "--output >(pigz --best > {output.fastq}) "
+            "<(pigz --decompress --stdout {input.fastq}) "
+        "> {log} 2>&1"
+
 
 
 
@@ -174,8 +162,8 @@ rule diginorm_filter_abund_sample_pair:
         fastq = temp(NORM_DIR + "{sample}.abundfilt.{pair}.fq.gz")
     threads:
         ALL_THREADS
-    params:
-        abundfilt_fq = "{sample}.keep.{pair}.fq.gz.abundfilt"
+    priority:
+        50
     log:
         NORM_DIR + "filter_abund_{sample}_{pair}.log"
     benchmark:
@@ -184,16 +172,10 @@ rule diginorm_filter_abund_sample_pair:
         "filter-abund.py "
             "--variable-coverage "
             "--threads {threads} "
+            "--output >(pigz --best > {output.fastq}) "
             "{input.table} "
-            "{input.fastq} "
-        "> {log} 2>&1 ; "
-        "pigz "
-            "--best "
-            "--stdout "
-            "{params.abundfilt_fq} "
-        "> {output.fastq} "
-        "2>> {log} ; "
-        "rm {params.abundfilt_fq}"
+            "<(pigz --decompress --stdout {input.fastq}) "
+        "> {log} 2>&1"
 
 
 
@@ -207,22 +189,20 @@ rule diginorm_extract_paired_reads_sample:
         fastq_pe = protected(NORM_DIR + "{sample}.final.pe_pe.fq.gz"),
         fastq_se = temp(NORM_DIR + "{sample}.temp.pe_se.fq.gz")
     threads:
-        1
-    params:
-        fastq_pe = "{sample}.abundfilt.pe_pe.fq.gz.pe",
-        fastq_se = "{sample}.abundfilt.pe_pe.fq.gz.se"
+        ALL_THREADS
+    priority:
+        50
     log:
         NORM_DIR + "extract_paired_reads_{sample}.log"
     benchmark:
         NORM_DIR + "extract_paired_reads_{sample}.json"
     shell:
         "extract-paired-reads.py "
-            "{input.fastq} "
-        "> {log} 2>&1 ; "
-        "pigz --best --stdout {params.fastq_pe} > {output.fastq_pe} ; "
-        "pigz --best --stdout {params.fastq_se} > {output.fastq_se} ; "
-        "rm {params.fastq_pe} {params.fastq_se}"
-
+            "--output-paired >(pigz --best > {output.fastq_pe}) "
+            "--output-single >(pigz --best > {output.fastq_se}) "
+            "<(pigz --decompress --stdout {input.fastq}) "
+        "> {log} 2>&1 && "
+        "sleep 5"
 
 
 rule diginorm_merge_pe_single_reads_sample:
@@ -236,15 +216,18 @@ rule diginorm_merge_pe_single_reads_sample:
         fastq = protected(NORM_DIR + "{sample}.final.pe_se.fq.gz")
     threads:
         ALL_THREADS
+    priority:
+        50
     log:
         NORM_DIR + "merge_single_reads_{sample}.log"
     benchmark:
         NORM_DIR + "merge_single_reads_{sample}.json"
     shell:
-        "cp {input.from_norm} {output.fastq} ; "
-        "pigz --decompress --stdout {input.from_paired} "
+        "pigz --decompress --stdout "
+            "{input.from_norm} "
+            "{input.from_paired} "
             "| pigz --best "
-        ">> {output.fastq}"
+        "> {output.fastq} 2> {log}"
 
 
 
@@ -259,6 +242,8 @@ rule dignorm_get_former_se_reads_sample:
         single= protected(NORM_DIR + "{sample}.final.se.fq.gz")
     threads:
         1
+    priority:
+        50
     log:
         NORM_DIR + "get_former_se_reads_{sample}.log"
     benchmark:
