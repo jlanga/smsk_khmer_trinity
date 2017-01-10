@@ -33,6 +33,8 @@ rule qc_trimmomatic_pe:
         QC_DIR + "trimmomatic_pe_{sample}.log"
     benchmark:
         QC_DIR + "trimmomatic_pe_{sample}.json"
+    priority:
+        50
     threads:
         ALL_THREADS
     shell:
@@ -75,6 +77,8 @@ rule qc_trimmomatic_se:
         adaptor = lambda wildcards: config["samples_se"][wildcards.sample]["adaptor"],
         phred = lambda wildcards: config["samples_se"][wildcards.sample]["phred"],
         trimmomatic_params = config["trimmomatic_params"]
+    priority:
+        50
     log:
         QC_DIR + "trimmomatic_se_{sample}.log"
     benchmark:
@@ -104,18 +108,26 @@ rule qc_interleave_pe_pe:
     output:
         interleaved= protected(QC_DIR + "{sample}.final.pe_pe.fq.gz")
     threads:
-        2 # One for the pairer and other for gzip
+        ALL_THREADS
+    priority:
+        50
     log:
         QC_DIR + "interleave_pe_{sample}.log"
     benchmark:
         QC_DIR + "interleave_pe_{sample}.json"
     shell:
         "(interleave-reads.py "
-            "{input.forward} "
-            "{input.reverse} "
+            "<(pigz -dc {input.forward}) "
+            "<(pigz -dc {input.reverse}) "
             "| pigz --best "
         "> {output.interleaved}) "
         "2> {log}"
+        #"(interleave-reads.py "
+        #    "{input.forward} "
+        #    "{input.reverse} "
+        #    "| pigz --best "
+        #"> {output.interleaved}) "
+        #"2> {log}"
 
 
 
