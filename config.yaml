@@ -4,17 +4,17 @@ samples_pe:
         reverse: data/fastq_raw/test1_2.fastq.gz
         adaptor: ./data/adapters/TruSeq3-PE-2.fa
         phred:   phred33
-#    pe2:
-#        forward: data/fastq_raw/test2_1.fastq.gz
-#        reverse: data/fastq_raw/test2_2.fastq.gz
-#        adaptor: ./src/adapters/TruSeq3-PE-2.fa
-#        phred:   phred33
+    pe2:
+        forward: data/fastq_raw/test2_1.fastq.gz
+        reverse: data/fastq_raw/test2_2.fastq.gz
+        adaptor: ./src/adapters/TruSeq3-PE-2.fa
+        phred:   phred33
 
 samples_se:
-#    se3:
-#        single:   data/fastq_raw/test3.fastq.gz
-#        adaptor:  ./data/adapters/TruSeq3-PE-2.fa
-#        phred:    phred33
+    se3:
+        single:   data/fastq_raw/test3.fastq.gz
+        adaptor:  ./data/adapters/TruSeq3-PE-2.fa
+        phred:    phred33
 
 
 trimmomatic_params:
