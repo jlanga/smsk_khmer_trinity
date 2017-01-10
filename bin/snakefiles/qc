@@ -108,7 +108,7 @@ rule qc_interleave_pe_pe:
     output:
         interleaved= protected(QC_DIR + "{sample}.final.pe_pe.fq.gz")
     threads:
-        ALL_THREADS
+        4
     priority:
         50
     log:
@@ -122,12 +122,6 @@ rule qc_interleave_pe_pe:
             "| pigz --best "
         "> {output.interleaved}) "
         "2> {log}"
-        #"(interleave-reads.py "
-        #    "{input.forward} "
-        #    "{input.reverse} "
-        #    "| pigz --best "
-        #"> {output.interleaved}) "
-        #"2> {log}"
 
 
 
