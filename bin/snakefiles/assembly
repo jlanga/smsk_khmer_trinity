@@ -1,6 +1,6 @@
 rule assembly_split_pe_files:
     """
-    Split pe_pe files into _1 and _2.
+    Split pe_pe files into _1 and _2. Note the sleep: If it is not there, the assembly_merge_right_and_left fails.
     """
     input:
         fastq_pe = NORM_DIR + "{sample}.final.pe_pe.fq.gz"
@@ -8,7 +8,9 @@ rule assembly_split_pe_files:
         left  = temp(ASSEMBLY_DIR + "{sample}_1.fq.gz"),
         right = temp(ASSEMBLY_DIR + "{sample}_2.fq.gz")
     threads:
-        1
+        ALL_THREADS
+    priority:
+        50
     params:
         left  = "{sample}.final.pe_pe.fq.gz.1",
         right = "{sample}.final.pe_pe.fq.gz.2"
@@ -18,12 +20,11 @@ rule assembly_split_pe_files:
         ASSEMBLY_DIR + "split_pe_files_{sample}.json"
     shell:
         "split-paired-reads.py "
-            "{input.fastq_pe} "
-        "> {log} 2>&1 ; "
-        "pigz --best --stdout {params.left}  > {output.left} ; "
-        "pigz --best --stdout {params.right} > {output.right} ; "
-        "rm {params.left} {params.right} "
-        
+            "--output-first >(pigz --best > {output.left}) "
+            "--output-second >(pigz --best > {output.right}) "
+            "<(pigz --decompress --stdout {input.fastq_pe}) "
+        "> {log} 2>&1 && "
+        "sleep 5"
 
 
 rule assembly_merge_right_and_left:
@@ -57,14 +58,16 @@ rule assembly_merge_right_and_left:
         left=  temp(ASSEMBLY_DIR + "left.fq"),
         right= temp(ASSEMBLY_DIR + "right.fq")
     threads:
-        2
+        1
+    priority:
+        50
     log:
         ASSEMBLY_DIR + "merge_right_and_left.log"
     benchmark:
         ASSEMBLY_DIR + "merge_right_and_left.json"
     shell:
-        "pigz --decompress --force --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} ; "
-        "pigz --decompress --force --stdout {input.reverse} > {output.right} 2>> {log} "
+        "pigz --decompress --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} && "
+        "pigz --decompress --stdout {input.reverse} > {output.right} 2>> {log} "
 
 
 
@@ -83,6 +86,8 @@ rule assembly_run_trinity:
         fasta = protected(ASSEMBLY_DIR + "Trinity.fasta")
     threads:
         ALL_THREADS
+    priority:
+        50
     params:
         memory= config["trinity_params"]["memory"],
         outdir= ASSEMBLY_DIR + "trinity_out_dir"
