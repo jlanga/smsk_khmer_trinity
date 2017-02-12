@@ -127,7 +127,7 @@ rule diginorm_normalize_by_median_sample_se:
     threads:
         ALL_THREADS
     priority:
-        50
+        2
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
