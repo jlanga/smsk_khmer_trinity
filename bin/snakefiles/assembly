@@ -10,7 +10,7 @@ rule assembly_split_pe_files:
     threads:
         ALL_THREADS
     priority:
-        50
+        20
     params:
         left  = "{sample}.final.pe_pe.fq.gz.1",
         right = "{sample}.final.pe_pe.fq.gz.2"
