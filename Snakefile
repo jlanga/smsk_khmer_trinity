@@ -18,11 +18,13 @@ include: snakefiles + "raw"
 include: snakefiles + "qc"
 include: snakefiles + "diginorm"
 include: snakefiles + "assembly"
-
+include: snakefiles + "filtering"
+include: snakefiles + "transrate"
 
 rule all:
     input:
-        ASSEMBLY_DIR + "Trinity.fasta",
-        RAW_DIR + "multiqc_report.html",
-        QC_DIR + "multiqc_report.html",
-        NORM_DIR + "multiqc_report.html"
+        filtering + "filtered_transcriptome.fasta",
+        assembly + "Trinity.fasta",
+        raw + "multiqc_report.html",
+        qc + "multiqc_report.html",
+        norm + "multiqc_report.html"
