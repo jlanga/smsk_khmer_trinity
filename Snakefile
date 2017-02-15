@@ -23,8 +23,7 @@ include: snakefiles + "transrate"
 
 rule all:
     input:
-        filtering + "filtered_transcriptome.fasta",
-        assembly + "Trinity.fasta",
+        transrate + "assemblies.csv",
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
         norm + "multiqc_report.html"
