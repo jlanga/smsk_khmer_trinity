@@ -31,3 +31,6 @@ diginorm_params:
 
 trinity_params:
     memory: "2G"
+
+kallisto_params:
+    "--bootstrap-samples=100 --bias"
