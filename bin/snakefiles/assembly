@@ -5,8 +5,8 @@ rule assembly_split_pe_files:
     input:
         fastq_pe = norm + "{sample}.final.pe_pe.fq.gz"
     output:
-        left  = temp(assembly + "{sample}_1.fq.gz"),
-        right = temp(assembly + "{sample}_2.fq.gz")
+        left  = assembly + "{sample}_1.fq.gz",
+        right = assembly + "{sample}_2.fq.gz"
     threads:
         ALL_THREADS
     priority:
@@ -55,8 +55,8 @@ rule assembly_merge_right_and_left:
             sample = SAMPLES_SE
         )
     output:
-        left=  temp(assembly + "left.fq"),
-        right= temp(assembly + "right.fq")
+        left=  assembly + "left.fq",
+        right= assembly + "right.fq"
     threads:
         1
     priority:

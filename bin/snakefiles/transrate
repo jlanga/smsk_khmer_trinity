@@ -1,0 +1,35 @@
+rule transrate_analysis:
+    input:
+        pre = assembly + "Trinity.fasta",
+        post = filtering + "filtered_transcriptome.fasta",
+        forward = assembly + "left.fq",
+        reverse = assembly + "right.fq"
+    output:
+        csv = transrate + "assemblies.csv"
+    params:
+        out_dir = transrate
+    threads:
+        24
+    log:
+        transrate + "pre.log"
+    benchmark:
+        transrate + "pre.json"
+    shell:
+        "docker run "
+            "--rm "
+            "--volume `pwd`:`pwd` "
+            "--workdir `pwd` "
+            "--user `id -u $USER`:`id -g $USER` "
+            "ycogne/transrate "
+                "/usr/bin/transrate-1.0.3-linux-x86_64/transrate "
+                    "--assembly {input.pre},{input.post} "
+                    "--left {input.forward} "
+                    "--right {input.reverse} "
+                    "--output {params.out_dir} "
+                    "--threads {threads} "
+        "2> {log} 1>&2"
+
+
+
+
+
