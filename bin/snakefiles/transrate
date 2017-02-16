@@ -1,4 +1,7 @@
 rule transrate_analysis:
+    """
+    Compare the raw and filtered assembly with transrate
+    """
     input:
         pre = assembly + "Trinity.fasta",
         post = filtering + "filtered_transcriptome.fasta",
