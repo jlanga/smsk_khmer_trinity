@@ -15,14 +15,16 @@ rule filtering_index_trinity:
 
 
 
+
+
 rule filtering_pseudoalign_all:
     input:
         forward = expand(
-            qc + "{sample}_1.fq.gz",
+            qc + "{sample}_1.fq",
             sample = SAMPLES_PE
         ),
         reverse = expand(
-            qc + "{sample}_1.fq.gz",
+            qc + "{sample}_1.fq",
             sample = SAMPLES_PE
         ),
         index   = filtering   + "Trinity.idx"
@@ -44,8 +46,8 @@ rule filtering_pseudoalign_all:
             "--output={params.outdir} "
             "--threads={threads} "
             "{params.params} "
-            "<(pigz --decompress --stdout {input.forward}) "
-            "<(pigz --decompress --stdout {input.reverse}) "
+            "<(cat {input.forward}) "
+            "<(cat {input.reverse}) "
         "2> {log}"
 
 
