@@ -73,7 +73,7 @@ rule diginorm_normalize_by_median_sample_pe_pe:
             "--paired "
             "--loadgraph {input.table} "
             "--output >(pigz --best > {output.fastq}) "
-            "<(pigz --decompress --stdout {input.fastq}) "
+            "<(gzip --decompress --stdout {input.fastq}) "
         "> {log} 2>&1 "
 
 
@@ -109,7 +109,7 @@ rule diginorm_normalize_by_median_sample_pe_se:
             "--cutoff {params.cutoff} "
             "--loadgraph {input.table} "
             "--output >(pigz --best > {output.fastq}) "
-            "<(pigz --decompress --stdout {input.fastq}) "
+            "<(gzip --decompress --stdout {input.fastq}) "
         "> {log} 2>&1"
 
 
@@ -145,7 +145,7 @@ rule diginorm_normalize_by_median_sample_se:
             "--cutoff {params.cutoff} "
             "--loadgraph {input.table} "
             "--output >(pigz --best > {output.fastq}) "
-            "<(pigz --decompress --stdout {input.fastq}) "
+            "<(gzip --decompress --stdout {input.fastq}) "
         "> {log} 2>&1"
 
 
@@ -174,7 +174,7 @@ rule diginorm_filter_abund_sample_pair:
             "--threads {threads} "
             "--output >(pigz --best > {output.fastq}) "
             "{input.table} "
-            "<(pigz --decompress --stdout {input.fastq}) "
+            "<(gzip --decompress --stdout {input.fastq}) "
         "> {log} 2>&1"
 
 
@@ -200,7 +200,7 @@ rule diginorm_extract_paired_reads_sample:
         "extract-paired-reads.py "
             "--output-paired >(pigz --best > {output.fastq_pe}) "
             "--output-single >(pigz --best > {output.fastq_se}) "
-            "<(pigz --decompress --stdout {input.fastq}) "
+            "<(gzip --decompress --stdout {input.fastq}) "
         "> {log} 2>&1 && "
         "sleep 5"
 
@@ -223,11 +223,12 @@ rule diginorm_merge_pe_single_reads_sample:
     benchmark:
         norm + "merge_single_reads_{sample}.json"
     shell:
-        "pigz --decompress --stdout "
+        "(pigz --decompress --stdout "
             "{input.from_norm} "
             "{input.from_paired} "
-            "| pigz --best "
-        "> {output.fastq} 2> {log}"
+        "| pigz --best "
+        "> {output.fastq}) "
+        "2> {log}"
 
 
 

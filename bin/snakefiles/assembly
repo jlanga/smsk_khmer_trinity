@@ -22,7 +22,7 @@ rule assembly_split_pe_files:
         "split-paired-reads.py "
             "--output-first >(pigz --best > {output.left}) "
             "--output-second >(pigz --best > {output.right}) "
-            "<(pigz --decompress --stdout {input.fastq_pe}) "
+            "<(gzip --decompress --stdout {input.fastq_pe}) "
         "> {log} 2>&1 && "
         "sleep 5"
 
@@ -66,8 +66,8 @@ rule assembly_merge_right_and_left:
     benchmark:
         assembly + "merge_right_and_left.json"
     shell:
-        "pigz --decompress --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} && "
-        "pigz --decompress --stdout {input.reverse} > {output.right} 2>> {log} "
+        "gzip --decompress --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} && "
+        "gzip --decompress --stdout {input.reverse} > {output.right} 2>> {log} "
 
 
 
