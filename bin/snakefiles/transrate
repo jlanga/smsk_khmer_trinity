@@ -2,18 +2,36 @@ rule transrate_analysis:
     input:
         pre = assembly + "Trinity.fasta",
         post = filtering + "filtered_transcriptome.fasta",
-        forward = assembly + "left.fq",
-        reverse = assembly + "right.fq"
+        forwards = expand(
+            qc + "{sample}_1.fq",
+            sample = SAMPLES_PE
+        ),
+        reverses = expand(
+            qc + "{sample}_2.fq",
+            sample = SAMPLES_PE
+        )
     output:
         csv = transrate + "assemblies.csv"
     params:
-        out_dir = transrate
+        out_dir = transrate,
+        forwards = ",".join(
+            expand(
+                qc + "{sample}_1.fq",
+                sample = SAMPLES_PE
+            ),
+        ),
+        reverses = ",".join(
+            expand(
+                qc + "{sample}_2.fq",
+                sample = SAMPLES_PE
+            ),
+        )
     threads:
         24
     log:
-        transrate + "pre.log"
+        transrate + "analysis.log"
     benchmark:
-        transrate + "pre.json"
+        transrate + "analysis.json"
     shell:
         "docker run "
             "--rm "
@@ -23,8 +41,8 @@ rule transrate_analysis:
             "ycogne/transrate "
                 "/usr/bin/transrate-1.0.3-linux-x86_64/transrate "
                     "--assembly {input.pre},{input.post} "
-                    "--left {input.forward} "
-                    "--right {input.reverse} "
+                    "--left {params.forwards} "
+                    "--right {params.reverses} "
                     "--output {params.out_dir} "
                     "--threads {threads} "
         "2> {log} 1>&2"
