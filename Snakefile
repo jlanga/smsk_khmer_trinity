@@ -20,10 +20,15 @@ include: snakefiles + "diginorm"
 include: snakefiles + "assembly"
 include: snakefiles + "filtering"
 include: snakefiles + "transrate"
+include: snakefiles + "tissue"
 
 rule all:
     input:
         transrate + "assemblies.csv",
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
-        norm + "multiqc_report.html"
+        norm + "multiqc_report.html",
+        expand(
+            tissue + "ids_{sample}.tsv",
+            sample = SAMPLES_PE
+        ) 

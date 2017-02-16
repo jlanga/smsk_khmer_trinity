@@ -111,6 +111,9 @@ rule assembly_run_trinity:
 
 
 rule assembly_gene_to_trans_map:
+    """
+    Create the gene_id TAB transcript_id file
+    """
     input:
         fasta = assembly + "Trinity.fasta"
     output:
@@ -128,6 +131,9 @@ rule assembly_gene_to_trans_map:
 
 
 rule assembly_index_trinity:
+    """
+    Create a samtool index for the assembly
+    """
     input:
         fasta = assembly + "Trinity.fasta"
     output:

@@ -1,4 +1,7 @@
 rule filtering_index_trinity:
+    """
+    Make a kallisto index for the assembly
+    """
     input:
         assembly = assembly + "Trinity.fasta"
     output:
@@ -18,13 +21,16 @@ rule filtering_index_trinity:
 
 
 rule filtering_pseudoalign_all:
+    """
+    Pseudomap and quantify all samples together.
+    """
     input:
         forward = expand(
             qc + "{sample}_1.fq",
             sample = SAMPLES_PE
         ),
         reverse = expand(
-            qc + "{sample}_1.fq",
+            qc + "{sample}_2.fq",
             sample = SAMPLES_PE
         ),
         index   = filtering   + "Trinity.idx"
@@ -53,6 +59,9 @@ rule filtering_pseudoalign_all:
 
 
 rule filtering_filtering_transcriptome_id:
+    """
+    Filter the transcripts as at least 5% per loci/gene
+    """
     input:
         abundance_tsv = filtering + "raw/abundance.tsv",
         assembly_map = assembly + "Trinity_gene_to_trans.tsv"
@@ -73,6 +82,9 @@ rule filtering_filtering_transcriptome_id:
 
 
 rule filtering_filtering_transcriptome_fasta:
+    """
+    Get the filtered fasta
+    """
     input:
         assembly = assembly + "Trinity.fasta",
         fai = assembly + "Trinity.fasta.fai",
@@ -92,6 +104,9 @@ rule filtering_filtering_transcriptome_fasta:
 
 
 rule filtering_index_filtered_transcriptome:
+    """
+    Index the filtered fasta (samtools)
+    """
     input:
         assembly = filtering + "filtered_transcriptome.fasta"
     output:
