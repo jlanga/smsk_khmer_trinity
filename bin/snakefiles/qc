@@ -38,23 +38,24 @@ rule qc_trimmomatic_pe:
     threads:
         ALL_THREADS
     shell:
-        "trimmomatic PE "
+        "(trimmomatic PE "
             "-threads {threads} "
             "-{params.phred} "
-            "<(pigz -dc {input.forward}) "
-            "<(pigz -dc {input.reverse}) "
-            ">(cut -f 1 -d \" \" | pigz -9 > {output.forward}) "
+            "<(gzip --decompress --stdout {input.forward}) "
+            "<(gzip --decompress --stdout {input.reverse}) "
+            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.forward}) "
             "{params.unpaired_1} "
-            ">(cut -f 1 -d \" \" | pigz -9 > {output.reverse}) "
+            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.reverse}) "
             "{params.unpaired_2} "
             "ILLUMINACLIP:{params.adaptor}:2:30:10 "
-            "{params.trimmomatic_params} "
-        "2> {log} ; "
-        "pigz --decompress --stdout {params.unpaired_1} {params.unpaired_2} "
-            "| cut -f 1 -d \" \" "
-            "| pigz -9 "
+            "{params.trimmomatic_params} ; "
+        "gzip --decompress --stdout {params.unpaired_1} {params.unpaired_2} "
+            "| cut --fields 1 --delimiter \" \" "
+            "| pigz --best "
         "> {output.unpaired} ; "
-        "rm {params.unpaired_1} {params.unpaired_2}"
+        "rm {params.unpaired_1} {params.unpaired_2}; "
+        "sleep 5) "
+        "2> {log}"
 
 
 
@@ -89,11 +90,29 @@ rule qc_trimmomatic_se:
         "trimmomatic SE "
             "-threads {threads} "
             "-{params.phred} "
-            "<(pigz -dc {input.single}) "
-            ">(cut -f 1 -d \" \" | pigz -9 > {output.single}) "
+            "<(gzip --decompress --stdout {input.single}) "
+            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.single}) "
             "ILLUMINACLIP:{params.adaptor}:2:30:10 "
             "{params.trimmomatic_params} "
         "2> {log}"
+
+
+
+rule qc_decompress_pe_sample:
+    input:
+        forward = qc + "{sample}_1.fq.gz",
+        reverse = qc + "{sample}_2.fq.gz"
+    output:
+        forward = qc + "{sample}_1.fq",
+        reverse = qc + "{sample}_2.fq"
+    threads:
+        1
+    log:
+        qc + "decompress_pe_{sample}.log"
+    benchmark:
+        qc + "decompress_pe_{sample}.json"
+    shell:
+        "gzip --decompress --keep {input.forward} {input.reverse} 2> {log}"
 
 
 
@@ -117,8 +136,8 @@ rule qc_interleave_pe_pe:
         qc + "interleave_pe_{sample}.json"
     shell:
         "(interleave-reads.py "
-            "<(pigz -dc {input.forward}) "
-            "<(pigz -dc {input.reverse}) "
+            "<(gzip --decompress --stdout {input.forward}) "
+            "<(gzip --decompress --stdout {input.reverse}) "
             "| pigz --best "
         "> {output.interleaved}) "
         "2> {log}"
