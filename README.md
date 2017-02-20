@@ -12,6 +12,10 @@ This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
 
 3. Assembles with `trinity`
 
+4. Perform some quality control with `transrate`
+
+5. Filter your raw transcriptome to get most representative transcripts from each gene (`kallisto`, `sleuth` and some `R`)
+
 ## 2. First steps
 
 Just follow what is inside the `.travis.yml`
@@ -30,16 +34,8 @@ Just follow what is inside the `.travis.yml`
 
 3. "Activate" an environment (extend paths)
     ```sh
-    source bin/activate
-    ```
-
-4. Install the required software
-
-    ```sh
-    bash scripts/install/brew.sh         # Brew itself
-    bash scripts/install/from_brew.sh    # Custom pieces of software so you don't need to sudo
-    bash scripts/install/from_pip3.sh    # Python3 packages
-    bash scripts/install/from_tarball.sh # Software that cannot be installed with the previous methods
+    bash bin/install/conda_env.sh
+    source activate smsk_khmer_trinity
     ```
 
 4. Execute the pipeline with test data:
@@ -48,7 +44,7 @@ Just follow what is inside the `.travis.yml`
     snakemake -j 16
     ```
 
-
+5. Modify the `config.yaml` at your will
 
 ## 3. File organization
 
@@ -56,24 +52,18 @@ The hierarchy of the folder is the one described in [A Quick Guide to Organizing
 
 ```
 smsk_khmer_trinity
-├── .linuxbrew: brew files
-├── bin: binaries and activate files.
+├── bin: binaries, scripts and environment files.
 ├── data: raw data, hopefully links to backup data.
-├── doc: logs, reports and figures.
-├── README.md
+├── README.md - This
 ├── results: processed data.
-├── scripts: snakefiles, installing scriptos, python, R, etc scripts to process data.
 └── src: additional source code, tarballs, etc.
 ```
-
-
 
 ## 4. Analyzing your data
 
 "Just" edit the `config.yaml` with the paths to your fastq files and change parameters. In the section `diginorm_params` \ `max_table_size` type `4e9` because it's anoyingly slow to do tests with 16Gb of RAM.
 
 Also raise Trinity's maximum memory usage if you need it.
-
 
 
 ## Links, References and Bibliography
@@ -87,3 +77,9 @@ Also raise Trinity's maximum memory usage if you need it.
 - [khmer](https://khmer-protocols.readthedocs.io/en/latest/mrnaseq/)
 
 - [trinity](https://github.com/trinityrnaseq/trinityrnaseq/wiki)
+
+- [kallisto](https://pachterlab.github.io/kallisto/)
+
+- [sleuth](http://pachterlab.github.io/sleuth/)
+
+- [transrate](hibberdlab.com/transrate/)
