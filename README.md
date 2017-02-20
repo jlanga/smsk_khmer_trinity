@@ -56,6 +56,13 @@ smsk_khmer_trinity
 ├── data: raw data, hopefully links to backup data.
 ├── README.md - This
 ├── results: processed data.
+|    ├── raw: links to raw data
+|    ├── qc: processed reads with trimmomatic
+|    ├── diginorm: digital normalization
+|    ├── assembly: Trinity output
+|    ├── filtering: TPM per loci filtering
+|    ├── tissue: per sample quantification
+|    └── transrate: assembly and filtering statistics
 └── src: additional source code, tarballs, etc.
 ```
 
