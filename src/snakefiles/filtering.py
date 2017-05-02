@@ -72,7 +72,7 @@ rule filtering_filtering_transcriptome_id:
     benchmark:
         filtering + "filtering_transcriptome_id.json"
     shell:
-        "Rscript bin/get_expressed_ids.R "
+        "Rscript src/get_expressed_ids.R "
             "--quantification {input.abundance_tsv} "
             "--gene_to_transcript_map {input.assembly_map} "
             "--expressed_ids {output.tsv} "
