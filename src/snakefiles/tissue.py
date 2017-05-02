@@ -13,7 +13,7 @@ rule tissue_experimental_design:
                 sample_name,
                 "results/tissue/" + sample_name]
                 for sample_name in config["samples_pe"]
-        }            
+        }
         with open(output.table, "w") as table:
             table.write("sample\ttissue\tpath\n")
             for sample_name in design_dict:
@@ -70,13 +70,13 @@ rule tissue_normalised_tpms:
         rdata = tissue + "so.Rdata",
         tpms = tissue + "normalised_tpms.tsv"
     threads:
-        1 
+        1
     log:
         tissue + "normalised_tpms.log"
     benchmark:
         tissue + "normalised_tpms.json"
     shell:
-        "Rscript bin/get_normalised_tpms.R "
+        "Rscript src/get_normalised_tpms.R "
             "--experimental_design {input.design} "
             "--sleuth_object {output.rdata} "
             "--normalised_tpms {output.tpms} "
