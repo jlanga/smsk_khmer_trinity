@@ -15,7 +15,7 @@ before_install:
   - export PATH="/home/travis/miniconda3/bin:$PATH"
 
 script:
-  - bash bin/install/conda_env.sh
+  - bash src/install/conda_env.sh
   - source activate smsk_khmer_trinity
-  - snakemake 
+  - snakemake -j 
   
