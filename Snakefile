@@ -1,5 +1,5 @@
 shell.prefix("set -euo pipefail;")
-configfile: "config.yaml"
+configfile: "src/config.yaml"
 
 
 SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
@@ -10,17 +10,17 @@ PAIRS = ["pe_pe", "pe_se"]
 
 ALL_THREADS = 64
 
-snakefiles = "bin/snakefiles/"
+snakefiles = "src/snakefiles/"
 
-include: snakefiles + "folders"
-include: snakefiles + "clean"
-include: snakefiles + "raw"
-include: snakefiles + "qc"
-include: snakefiles + "diginorm"
-include: snakefiles + "assembly"
-include: snakefiles + "filtering"
-include: snakefiles + "transrate"
-include: snakefiles + "tissue"
+include: snakefiles + "folders.py"
+include: snakefiles + "clean.py"
+include: snakefiles + "raw.py"
+include: snakefiles + "qc.py"
+include: snakefiles + "diginorm.py"
+include: snakefiles + "assembly.py"
+include: snakefiles + "filtering.py"
+include: snakefiles + "transrate.py"
+include: snakefiles + "tissue.py"
 
 rule all:
     input:

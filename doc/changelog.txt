@@ -1,0 +1,5 @@
+## 2017-05-02
+
+* Added changelog.txt
+* Moved everything from bin to src
+* Moved requirements.txt to root
