@@ -18,4 +18,4 @@ script:
   - bash src/install/conda_env.sh
   - source activate smsk_khmer_trinity
   - mkdir -p results/assembly/ && touch results/assembly/run_trinity.log
-  - (tail --follow --sleep-interval 60 run_trinity.log & ) && snakemake -j 2 && kill %1
+  - (tail --follow --sleep-interval 60 results/assembly/run_trinity.log & ) && snakemake -j 2 && kill %1
