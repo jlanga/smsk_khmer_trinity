@@ -17,5 +17,8 @@ before_install:
 script:
   - bash src/install/conda_env.sh
   - source activate smsk_khmer_trinity
+  - mkdir -p results/assembly/ && touch results/assembly/run_trinity.log
+  - tail -f run_trinity.log &
   - snakemake -j 
+  - kill %1
   
