@@ -13,12 +13,9 @@ before_install:
   - curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
   - bash Miniconda3-latest-Linux-x86_64.sh -b
   - export PATH="/home/travis/miniconda3/bin:$PATH"
-
+  - bash src/install/conda_env.sh
 jobs:
     include:
-        - stage: conda_env
-          script:
-            - bash src/install/conda_env.sh
         - stage: preprocessing
           script:
             - source activate smsk_khmer_trinity
