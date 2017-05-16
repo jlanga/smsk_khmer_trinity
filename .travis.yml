@@ -21,7 +21,7 @@ jobs:
             - bash /src/install/conda_env.sh
             - source activate smsk_khmer_trinity
         - stage: qc_and_normalization
-            script: snakemake results/assembly/{left,right}.fq -j
+          script: snakemake results/assembly/{left,right}.fq -j
         - stage: assembly
-            script: snakemake -j
+          script: snakemake -j
 
