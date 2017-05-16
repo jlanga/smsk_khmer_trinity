@@ -17,5 +17,5 @@ before_install:
 
 script:
   - source activate smsk_khmer_trinity
-  - travis_wait 40 snakemake -j
+  - travis_wait 30 snakemake -j
 
