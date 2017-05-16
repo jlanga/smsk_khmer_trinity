@@ -14,8 +14,14 @@ before_install:
   - bash Miniconda3-latest-Linux-x86_64.sh -b
   - export PATH="/home/travis/miniconda3/bin:$PATH"
 
-script:
-  - bash src/install/conda_env.sh
-  - source activate smsk_khmer_trinity
-  - mkdir -p results/assembly/ && touch results/assembly/run_trinity.log
-  - (tail --follow --sleep-interval 60 results/assembly/run_trinity.log & ) && snakemake -j 2 && kill %1
+jobs:
+    include:
+        - stage: conda_env
+            script:
+                - bash /src/install/conda_env.sh
+                - source activate smsk_khmer_trinity
+        - stage: qc_and_normalization
+            script: snakemake results/assembly/{left,right}.fq -j
+        - stage: assembly
+            script: snakemake -j
+
