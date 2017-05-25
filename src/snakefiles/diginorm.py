@@ -190,8 +190,6 @@ rule diginorm_extract_paired_reads_sample:
         fastq_se = temp(norm + "{sample}.temp.pe_se.fq.gz")
     threads:
         2
-    priority:
-        50
     log:
         norm + "extract_paired_reads_{sample}.log"
     benchmark:
@@ -216,8 +214,6 @@ rule diginorm_merge_pe_single_reads_sample:
         fastq = protected(norm + "{sample}.final.pe_se.fq.gz")
     threads:
         ALL_THREADS
-    priority:
-        50
     log:
         norm + "merge_single_reads_{sample}.log"
     benchmark:
