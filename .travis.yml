@@ -25,4 +25,4 @@ script:
   - snakemake -j2 results/assembly/Trinity.fasta
 
 after_error:
-    - cat results/diginorm/load_into_counting.log
+    - cat results/assembly/merge_right_and_left.log
