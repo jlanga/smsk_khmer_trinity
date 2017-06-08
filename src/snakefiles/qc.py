@@ -53,8 +53,7 @@ rule qc_trimmomatic_pe:
             "| cut --fields 1 --delimiter \" \" "
             "| pigz --best "
         "> {output.unpaired} ; "
-        "rm {params.unpaired_1} {params.unpaired_2}; "
-        "sleep 5) "
+        "rm {params.unpaired_1} {params.unpaired_2}) "
         "2> {log}"
 
 
@@ -105,8 +104,6 @@ rule qc_decompress_pe_sample:
     output:
         forward = qc + "{sample}_1.fq",
         reverse = qc + "{sample}_2.fq"
-    threads:
-        1
     log:
         qc + "decompress_pe_{sample}.log"
     benchmark:
@@ -128,8 +125,6 @@ rule qc_interleave_pe_pe:
         interleaved= protected(qc + "{sample}.final.pe_pe.fq.gz")
     threads:
         4
-    priority:
-        50
     log:
         qc + "interleave_pe_{sample}.log"
     benchmark:
