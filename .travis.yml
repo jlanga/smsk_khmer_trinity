@@ -21,4 +21,7 @@ install:
 
 script:
   - source activate smsk_khmer_trinity
-  - snakemake -j2
+  - snakemake -j2 results/assembly/Trinity.fasta
+
+after_error:
+    - cat results/diginorm/load_into_counting.log
