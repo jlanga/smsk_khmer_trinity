@@ -10,7 +10,6 @@ addons:
 
 cache:
     directories:
-        - $HOME/data/download/
         - $HOME/miniconda3/
 
 before_install:
@@ -22,4 +21,4 @@ install:
 
 script:
   - source activate smsk_khmer_trinity
-  - snakemake -j
+  - snakemake -j2
