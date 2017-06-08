@@ -37,7 +37,7 @@ rule diginorm_load_into_counting:
             "--threads {threads} "
             "{output.table} "
             "{input.fastqs} "
-        "> {log} 2>&1"
+        "2> {log}"
 
 
 
