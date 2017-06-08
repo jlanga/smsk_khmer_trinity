@@ -23,7 +23,7 @@ rule assembly_split_pe_files:
             "--output-first >(pigz --best > {output.left}) "
             "--output-second >(pigz --best > {output.right}) "
             "{input.fastq_pe} "
-        "> {log} 2>&1"
+        "> {log} 2>&1 ; sleep 5"
 
 rule assembly_merge_right_and_left:
     """
