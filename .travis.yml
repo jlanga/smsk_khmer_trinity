@@ -22,7 +22,7 @@ install:
 
 script:
   - source activate smsk_khmer_trinity
-  - snakemake -j2 results/assembly/Trinity.fasta
+  - snakemake -j1 results/assembly/Trinity.fasta
 
-after_error:
+after_failure:
     - cat results/assembly/merge_right_and_left.log
