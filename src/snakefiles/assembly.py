@@ -1,6 +1,6 @@
 rule assembly_split_pe_files:
     """
-    Split pe_pe files into _1 and _2. Note the sleep: If it is not there, the assembly_merge_right_and_left fails.
+    Split pe_pe files into _1 and _2.
     """
     input:
         fastq_pe = norm + "{sample}.final.pe_pe.fq.gz"
@@ -8,7 +8,13 @@ rule assembly_split_pe_files:
         left  = assembly + "{sample}_1.fq.gz",
         right = assembly + "{sample}_2.fq.gz"
     threads:
+<<<<<<< HEAD
         4
+=======
+        1
+    priority:
+        20
+>>>>>>> travis
     params:
         left  = "{sample}.final.pe_pe.fq.gz.1",
         right = "{sample}.final.pe_pe.fq.gz.2"
@@ -20,10 +26,8 @@ rule assembly_split_pe_files:
         "split-paired-reads.py "
             "--output-first >(pigz --best > {output.left}) "
             "--output-second >(pigz --best > {output.right}) "
-            "<(gzip --decompress --stdout {input.fastq_pe}) "
-        "> {log} 2>&1 && "
-        "sleep 5"
-
+            "{input.fastq_pe} "
+        "> {log} 2>&1 ; sleep 5"
 
 rule assembly_merge_right_and_left:
     """
@@ -37,24 +41,25 @@ rule assembly_merge_right_and_left:
         it may be waiting something from stdout.
     """
     input:
-        forward=  expand(
+        forward =  expand(
             assembly + "{sample}_1.fq.gz",
-            sample = SAMPLES_PE
+            sample=SAMPLES_PE
         ) if SAMPLES_PE  else ["/dev/null"],
-        reverse=  expand(
+        reverse =  expand(
             assembly + "{sample}_2.fq.gz",
-            sample = SAMPLES_PE
+            sample=SAMPLES_PE
         ) if SAMPLES_PE  else ["/dev/null"],
-        unpaired= expand( # pe_se
+        single = expand( # pe_se
             norm + "{sample}.final.pe_se.fq.gz",
-            sample = SAMPLES_PE
+            sample=SAMPLES_PE
         ) + expand( # se
             norm + "{sample}.final.se.fq.gz",
-            sample = SAMPLES_SE
+            sample=SAMPLES_SE
         )
     output:
-        left=  assembly + "left.fq",
-        right= assembly + "right.fq"
+        left =  assembly + "left.fq",
+        right = assembly + "right.fq",
+        single = assembly + "single.fq"
     threads:
         1
     log:
@@ -62,8 +67,15 @@ rule assembly_merge_right_and_left:
     benchmark:
         assembly + "merge_right_and_left.json"
     shell:
-        "gzip --decompress --stdout {input.forward} {input.unpaired} > {output.left} 2> {log} && "
-        "gzip --decompress --stdout {input.reverse} > {output.right} 2>> {log} "
+        "gzip --decompress --stdout "
+            "{input.forward} "
+        "> {output.left} 2> {log}; "
+        "gzip --decompress --stdout "
+            "{input.reverse} "
+        "> {output.right} 2>> {log}; "
+        "gzip --decompress --stdout "
+            "{input.single} "
+        "> {output.single} 2>> {log}"
 
 
 
@@ -76,8 +88,9 @@ rule assembly_run_trinity:
         - Does the full cleanup so it only remains a fasta file.
     """
     input:
-        left  = assembly + "left.fq",
-        right = assembly + "right.fq"
+        left =  assembly + "left.fq",
+        right = assembly + "right.fq",
+        #single = assembly + "single.fq"
     output:
         fasta = protected(assembly + "Trinity.fasta")
     threads:
@@ -94,6 +107,7 @@ rule assembly_run_trinity:
     shell:
         "Trinity "
             "--seqType fq "
+            "--no_normalize_reads "
             "--max_memory {params.memory} "
             "--left {input.left} "
             "--right {input.right} "
@@ -101,8 +115,7 @@ rule assembly_run_trinity:
             "--full_cleanup "
             "--output {params.outdir} "
         "> {log} ; "
-        "mv {params.outdir}.Trinity.fasta {output.fasta} ; "
-        "rm {input.left}.readcount {input.right}.readcount"
+        "mv {params.outdir}.Trinity.fasta {output.fasta}"
 
 
 
