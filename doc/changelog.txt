@@ -1,3 +1,8 @@
+## 2017-06-08
+
+* Moving to Trinity 2.3.2 because in the previous version bowtie got stuck
+* Cleaning some of the snakefiles to prevent blocking
+
 ## 2017-05-02
 
 * Added changelog.txt

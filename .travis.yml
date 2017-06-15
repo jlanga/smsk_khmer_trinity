@@ -2,20 +2,32 @@ dist: trusty
 
 language: bash
 
-sudo: required
+addons:
+    apt_packages:
+        - build-essential
+        - git
+        - curl
 
-services:
-  - docker
+cache:
+    directories:
+        - $HOME/download/
+        #- $HOME/miniconda3/
 
 before_install:
-  - sudo apt-get -qq update
-  - sudo apt-get install -y build-essential curl git
-  - curl -O https://repo.continuum.io/miniconda/Miniconda3-latest-Linux-x86_64.sh
-  - bash Miniconda3-latest-Linux-x86_64.sh -b
+  - bash .travis/travis_before_install.sh
   - export PATH="/home/travis/miniconda3/bin:$PATH"
 
-script:
+install:
   - bash src/install/conda_env.sh
+
+script:
   - source activate smsk_khmer_trinity
+<<<<<<< HEAD
   - mkdir -p results/assembly/ && touch results/assembly/run_trinity.log
   - (tail --follow --sleep-interval 60 results/assembly/run_trinity.log & ) && travis_wait snakemake -j 2 && kill %1
+=======
+  - snakemake -j1 results/assembly/Trinity.fasta
+
+after_failure:
+    - cat results/assembly/merge_right_and_left.log
+>>>>>>> travis
