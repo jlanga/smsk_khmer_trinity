@@ -22,12 +22,5 @@ install:
 
 script:
   - source activate smsk_khmer_trinity
-<<<<<<< HEAD
-  - mkdir -p results/assembly/ && touch results/assembly/run_trinity.log
-  - (tail --follow --sleep-interval 60 results/assembly/run_trinity.log & ) && travis_wait snakemake -j 2 && kill %1
-=======
-  - snakemake -j1 results/assembly/Trinity.fasta
+  - snakemake -j2
 
-after_failure:
-    - cat results/assembly/merge_right_and_left.log
->>>>>>> travis
