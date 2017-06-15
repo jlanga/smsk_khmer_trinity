@@ -18,8 +18,6 @@ rule diginorm_load_into_counting:
         info  = temp(norm + "diginorm_table.kh.info")
     threads:
         ALL_THREADS
-    priority:
-        50
     log:
         norm + "load_into_counting.log"
     benchmark:
@@ -183,7 +181,7 @@ rule diginorm_extract_paired_reads_sample:
         fastq_pe = protected(norm + "{sample}.final.pe_pe.fq.gz"),
         fastq_se = temp(norm + "{sample}.temp.pe_se.fq.gz")
     threads:
-        2
+        1
     log:
         norm + "extract_paired_reads_{sample}.log"
     benchmark:
@@ -205,11 +203,6 @@ rule diginorm_merge_pe_single_reads_sample:
         from_paired= norm + "{sample}.temp.pe_se.fq.gz"
     output:
         fastq = protected(norm + "{sample}.final.pe_se.fq.gz")
-<<<<<<< HEAD
-    threads:
-        ALL_THREADS
-=======
->>>>>>> travis
     log:
         norm + "merge_single_reads_{sample}.log"
     benchmark:

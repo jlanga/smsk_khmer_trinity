@@ -8,13 +8,7 @@ rule assembly_split_pe_files:
         left  = assembly + "{sample}_1.fq.gz",
         right = assembly + "{sample}_2.fq.gz"
     threads:
-<<<<<<< HEAD
-        4
-=======
         1
-    priority:
-        20
->>>>>>> travis
     params:
         left  = "{sample}.final.pe_pe.fq.gz.1",
         right = "{sample}.final.pe_pe.fq.gz.2"
