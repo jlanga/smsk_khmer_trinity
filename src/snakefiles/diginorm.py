@@ -37,7 +37,7 @@ rule diginorm_load_into_counting:
             "--threads {threads} "
             "{output.table} "
             "{input.fastqs} "
-        "> {log} 2>&1"
+        "2> {log}"
 
 
 
@@ -53,8 +53,6 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         fastq = temp(norm + "{sample}.keep.pe_pe.fq.gz")
     threads:
         ALL_THREADS
-    priority:
-        50
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
@@ -90,8 +88,6 @@ rule diginorm_normalize_by_median_sample_pe_se:
         fastq = temp(norm + "{sample}.keep.pe_se.fq.gz")
     threads:
         ALL_THREADS
-    priority:
-        50
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
@@ -126,8 +122,6 @@ rule diginorm_normalize_by_median_sample_se:
         fastq = temp(norm + "{sample}.keep.se.fq.gz")
     threads:
         ALL_THREADS
-    priority:
-        2
     params:
         cutoff   = config["diginorm_params"]["cutoff"],
         ksize    = config["diginorm_params"]["ksize"],
@@ -174,7 +168,7 @@ rule diginorm_filter_abund_sample_pair:
             "--threads {threads} "
             "--output >(pigz --best > {output.fastq}) "
             "{input.table} "
-            "<(gzip --decompress --stdout {input.fastq}) "
+            "{input.fastq} "
         "> {log} 2>&1"
 
 
@@ -198,9 +192,8 @@ rule diginorm_extract_paired_reads_sample:
         "extract-paired-reads.py "
             "--output-paired >(pigz --best > {output.fastq_pe}) "
             "--output-single >(pigz --best > {output.fastq_se}) "
-            "<(gzip --decompress --stdout {input.fastq}) "
-        "> {log} 2>&1 && "
-        "sleep 5"
+            "{input.fastq} "
+        "> {log} 2>&1"
 
 
 rule diginorm_merge_pe_single_reads_sample:
@@ -212,8 +205,11 @@ rule diginorm_merge_pe_single_reads_sample:
         from_paired= norm + "{sample}.temp.pe_se.fq.gz"
     output:
         fastq = protected(norm + "{sample}.final.pe_se.fq.gz")
+<<<<<<< HEAD
     threads:
         ALL_THREADS
+=======
+>>>>>>> travis
     log:
         norm + "merge_single_reads_{sample}.log"
     benchmark:
@@ -237,10 +233,6 @@ rule dignorm_get_former_se_reads_sample:
         single= norm + "{sample}.abundfilt.se.fq.gz"
     output:
         single= protected(norm + "{sample}.final.se.fq.gz")
-    threads:
-        1
-    priority:
-        50
     log:
         norm + "get_former_se_reads_{sample}.log"
     benchmark:
@@ -275,8 +267,6 @@ rule diginorm_fastqc_sample_pair:
     output:
         zip   = protected(norm + "{sample}.final.{pair}_fastqc.zip"),
         html  = protected(norm + "{sample}.final.{pair}_fastqc.html")
-    threads:
-        1
     params:
         outdir = norm
     log:
