@@ -2,6 +2,9 @@ dist: trusty
 
 language: bash
 
+services:
+  - docker
+
 addons:
     apt_packages:
         - build-essential
@@ -23,4 +26,3 @@ install:
 script:
   - source activate smsk_khmer_trinity
   - snakemake -j2
-
