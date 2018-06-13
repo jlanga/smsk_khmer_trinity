@@ -1,21 +1,42 @@
+def get_path_forward(wildcards):
+    """"""
+    return config["samples_pe"][wildcards.sample]["forward"]
+
+
+def get_path_reverse(wildcards):
+    """"""
+    return config["samples_pe"][wildcards.sample]["reverse"]
+
+
 rule raw_make_links_pe_sample:
     """
     Make a link next to the original file, with a prettier name than default.
     """
     input:
-        forward= lambda wildcards: config["samples_pe"][wildcards.sample]["forward"],
-        reverse= lambda wildcards: config["samples_pe"][wildcards.sample]["reverse"]
+        forward = get_path_forward,
+        reverse = get_path_reverse
     output:
-        forward= protected(raw + "{sample}_1.fq.gz"),
-        reverse= protected(raw + "{sample}_2.fq.gz")
+        forward = protected(raw + "{sample}_1.fq.gz"),
+        reverse = protected(raw + "{sample}_2.fq.gz")
     log:
         raw + "make_links_pe_{sample}.log"
     benchmark:
         raw + "make_links_pe_{sample}.bmk"
     shell:
-        "ln --symbolic $(readlink --canonicalize {input.forward}) {output.forward} 2> {log}; "
-        "ln --symbolic $(readlink --canonicalize {input.reverse}) {output.reverse} 2>> {log}"
+        """
+        (ln --symbolic \
+            $(readlink --canonicalize {input.forward}) \
+            {output.forward}
+        ln --symbolic \
+            $(readlink --canonicalize {input.reverse}) \
+            {output.reverse} ) \
+        2>> {log}
+        """
 
+
+def get_path_single(wildcards):
+    """"""
+    return config["samples_se"][wildcards.sample]["single"]
 
 
 rule raw_make_links_se_sample:
@@ -23,15 +44,20 @@ rule raw_make_links_se_sample:
     Make a link next to the original file, with a prettier name than default.
     """
     input:
-        single= lambda wildcards: config["samples_se"][wildcards.sample]["single"],
+        single = get_path_single,
     output:
-        single= protected(raw + "{sample}_se.fq.gz")
+        single = protected(raw + "{sample}_se.fq.gz")
     log:
         raw + "make_links_se_{sample}.log"
     benchmark:
         raw + "make_links_se_{sample}.bmk"
     shell:
-        "ln --symbolic $(readlink --canonicalize {input.single}) {output.single} 2> {log}"
+        """
+        ln --symbolic \
+            $(readlink --canonicalize {input.single}) \
+            {output.single} \
+        2> {log}
+        """
 
 
 rule raw_fastqc_pe_sample:
@@ -40,10 +66,10 @@ rule raw_fastqc_pe_sample:
         forward = raw + "{sample}_1.fq.gz",
         reverse = raw + "{sample}_2.fq.gz"
     output:
-        html1= protected(raw + "{sample}_1_fastqc.html"),
-        html2= protected(raw + "{sample}_2_fastqc.html"),
-        zip1=  protected(raw + "{sample}_1_fastqc.zip"),
-        zip2=  protected(raw + "{sample}_2_fastqc.zip")
+        html1 = protected(raw + "{sample}_1_fastqc.html"),
+        html2 = protected(raw + "{sample}_2_fastqc.html"),
+        zip1 = protected(raw + "{sample}_1_fastqc.zip"),
+        zip2 = protected(raw + "{sample}_2_fastqc.zip")
     threads:
         2
     params:
@@ -55,12 +81,15 @@ rule raw_fastqc_pe_sample:
     conda:
         "raw.yml"
     shell:
-        "fastqc "
-            "--nogroup "
-            "--outdir {params.outdir} "
-            "{input.forward} {input.reverse} "
-            "2> {log} 1>&2"
-
+        """
+        fastqc \
+            --threads {threads} \
+            --nogroup \
+            --outdir {params.outdir} \
+            {input.forward} \
+            {input.reverse} \
+        2> {log} 1>&2
+        """
 
 
 rule raw_fastqc_se_sample:
@@ -68,8 +97,8 @@ rule raw_fastqc_se_sample:
     input:
         fq = raw + "{sample}_se.fq.gz",
     output:
-        html= protected(raw + "{sample}_se_fastqc.html"),
-        zip=  protected(raw + "{sample}_se_fastqc.zip")
+        html = protected(raw + "{sample}_se_fastqc.html"),
+        zip = protected(raw + "{sample}_se_fastqc.zip")
     params:
         outdir = raw
     log:
@@ -79,12 +108,13 @@ rule raw_fastqc_se_sample:
     conda:
         "raw.yml"
     shell:
-        "fastqc "
-            "--nogroup "
-            "--outdir {params.outdir} "
-            "{input.fq} "
-            "2> {log} 1>&2"
-
+        """
+        fastqc \
+            --nogroup \
+            --outdir {params.outdir} \
+            {input.fq} \
+        2> {log} 1>&2
+        """
 
 
 rule raw_multiqc:
@@ -92,14 +122,14 @@ rule raw_multiqc:
     input:
         pe_files = expand(
             raw + "{sample}_{pair}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            pair = "1 2".split(),
-            extension = "html zip".split()
+            sample=SAMPLES_PE,
+            pair="1 2".split(),
+            extension="html zip".split()
         ),
         se_files = expand(
             raw + "{sample}_se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = "html zip".split()
+            sample=SAMPLES_SE,
+            extension="html zip".split()
         )
     output:
         html = protected(raw + "multiqc_report.html")
@@ -112,12 +142,13 @@ rule raw_multiqc:
     conda:
         "raw.yml"
     shell:
-        "multiqc "
-            "--title Raw "
-            "--filename {output.html} "
-            "{params.folder} "
-        "2> {log}"
-
+        """
+        multiqc \
+            --title Raw \
+            --filename {output.html} \
+            {params.folder} \
+        2> {log}
+        """
 
 
 rule raw_results:
@@ -125,14 +156,13 @@ rule raw_results:
     input:
         expand(
             raw + "{sample}_{end}.fq.gz",
-            sample = SAMPLES_PE,
-            end = "1 2".split()
+            sample=SAMPLES_PE,
+            end="1 2".split()
         ),
         expand(
             raw + "{sample}_se.fq.gz",
-            sample = SAMPLES_SE
+            sample=SAMPLES_SE
         )
-
 
 
 rule raw_doc:
@@ -141,17 +171,16 @@ rule raw_doc:
         html = raw + "multiqc_report.html"
 
 
-
 rule raw:
     """Make both results + reports for raw (raw = raw_doc)"""
     input:
         pe_files = expand(
             raw + "{sample}_{end}.fq.gz",
-            sample = SAMPLES_PE,
-            end = "1 2".split()
+            sample=SAMPLES_PE,
+            end="1 2".split()
         ),
         se_files = expand(
             raw + "{sample}_se.fq.gz",
-            sample = SAMPLES_SE
+            sample=SAMPLES_SE
         ),
         html = raw + "multiqc_report.html"
