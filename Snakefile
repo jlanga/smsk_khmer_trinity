@@ -19,12 +19,10 @@ include: snakefiles + "qc.py"
 include: snakefiles + "diginorm.py"
 include: snakefiles + "assembly.py"
 include: snakefiles + "filtering.py"
-include: snakefiles + "transrate.py"
 include: snakefiles + "tissue.py"
 
 rule all:
     input:
-        # transrate + "assemblies.csv",
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
         norm + "multiqc_report.html",
