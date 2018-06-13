@@ -20,6 +20,11 @@ include: snakefiles + "diginorm.py"
 include: snakefiles + "assembly.py"
 
 rule all:
+    """
+    Run the entire pipeline:
+        - Reports for raw, trimmed and normalized reads
+        - Assembly
+    """
     input:
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
