@@ -30,7 +30,7 @@ before_install:
 
 install:
   - bash .travis/travis_install.sh
-  - export PATH="$HOME"/miniconda3_$TRAVIS_OS_NAME:$PATH"
+  - export PATH="$HOME/miniconda3_$TRAVIS_OS_NAME:$PATH"
   - conda install --yes -c bioconda snakemake
 
 script:
