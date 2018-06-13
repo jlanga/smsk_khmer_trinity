@@ -1,5 +1,8 @@
-conda config --add channels conda-forge
+#!/usr/bin/env bash
+
+set -euo pipefail
+
 conda config --add channels defaults
-conda config --add channels r
+conda config --add channels conda-forge
 conda config --add channels bioconda
-conda env create --name smsk_khmer_trinity --file requirements.txt
+
