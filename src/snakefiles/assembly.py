@@ -5,23 +5,28 @@ rule assembly_split_pe_files:
     input:
         fastq_pe = norm + "{sample}.final.pe_pe.fq.gz"
     output:
-        left  = assembly + "{sample}_1.fq.gz",
+        left = assembly + "{sample}_1.fq.gz",
         right = assembly + "{sample}_2.fq.gz"
-    threads:
-        1
     params:
-        left  = "{sample}.final.pe_pe.fq.gz.1",
+        left = "{sample}.final.pe_pe.fq.gz.1",
+
         right = "{sample}.final.pe_pe.fq.gz.2"
     log:
         assembly + "split_pe_files_{sample}.log"
     benchmark:
-        assembly + "split_pe_files_{sample}.json"
+        assembly + "split_pe_files_{sample}.bmk"
+    conda:
+        "assembly.yml"
     shell:
-        "split-paired-reads.py "
-            "--output-first >(pigz --best > {output.left}) "
-            "--output-second >(pigz --best > {output.right}) "
-            "{input.fastq_pe} "
-        "> {log} 2>&1 ; sleep 5"
+        """
+        split-paired-reads.py \
+            --output-first >(pigz --best > {output.left}) \
+            --output-second >(pigz --best > {output.right}) \
+            {input.fastq_pe} \
+        > {log} 2>&1 ;\
+        sleep 5
+        """
+
 
 rule assembly_merge_right_and_left:
     """
@@ -35,42 +40,37 @@ rule assembly_merge_right_and_left:
         it may be waiting something from stdout.
     """
     input:
-        forward =  expand(
+        forward = expand(
             assembly + "{sample}_1.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE  else ["/dev/null"],
-        reverse =  expand(
+        ) if SAMPLES_PE else ["/dev/null"],
+        reverse = expand(
             assembly + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE  else ["/dev/null"],
-        single = expand( # pe_se
+        ) if SAMPLES_PE else ["/dev/null"],
+        single = expand(  # pe_se
             norm + "{sample}.final.pe_se.fq.gz",
             sample=SAMPLES_PE
-        ) + expand( # se
+        ) + expand(  # se
             norm + "{sample}.final.se.fq.gz",
             sample=SAMPLES_SE
         )
     output:
-        left =  assembly + "left.fq",
+        left = assembly + "left.fq",
         right = assembly + "right.fq",
         single = assembly + "single.fq"
-    threads:
-        1
     log:
         assembly + "merge_right_and_left.log"
     benchmark:
-        assembly + "merge_right_and_left.json"
+        assembly + "merge_right_and_left.bmk"
+    conda:
+        "assembly.yml"
     shell:
-        "gzip --decompress --stdout "
-            "{input.forward} "
-        "> {output.left} 2> {log}; "
-        "gzip --decompress --stdout "
-            "{input.reverse} "
-        "> {output.right} 2>> {log}; "
-        "gzip --decompress --stdout "
-            "{input.single} "
-        "> {output.single} 2>> {log}"
-
+        """
+        gzip --decompress --stdout {input.forward} > {output.left} 2> {log}
+        gzip --decompress --stdout {input.reverse} > {output.right} 2>> {log}
+        gzip --decompress --stdout {input.single} > {output.single} 2>> {log}
+        """
 
 
 rule assembly_run_trinity:
@@ -82,9 +82,9 @@ rule assembly_run_trinity:
         - Does the full cleanup so it only remains a fasta file.
     """
     input:
-        left =  assembly + "left.fq",
+        left = assembly + "left.fq",
         right = assembly + "right.fq",
-        #single = assembly + "single.fq"
+        # single = assembly + "single.fq"
     output:
         fasta = protected(assembly + "Trinity.fasta")
     threads:
@@ -92,25 +92,28 @@ rule assembly_run_trinity:
     priority:
         50
     params:
-        memory= config["trinity_params"]["memory"],
-        outdir= assembly + "trinity_out_dir"
+        memory = config["trinity_params"]["memory"],
+        outdir = assembly + "trinity_out_dir"
     log:
         assembly + "run_trinity.log"
     benchmark:
-        assembly + "run_trinity.json"
+        assembly + "run_trinity.bmk"
+    conda:
+        "assembly.yml"
     shell:
-        "Trinity "
-            "--seqType fq "
-            "--no_normalize_reads "
-            "--max_memory {params.memory} "
-            "--left {input.left} "
-            "--right {input.right} "
-            "--CPU {threads} "
-            "--full_cleanup "
-            "--output {params.outdir} "
-        "> {log} ; "
-        "mv {params.outdir}.Trinity.fasta {output.fasta}"
-
+        """
+        Trinity \
+            --seqType fq \
+            --no_normalize_reads \
+            --max_memory {params.memory} \
+            --left {input.left} \
+            --right {input.right} \
+            --CPU {threads} \
+            --full_cleanup \
+            --output {params.outdir} \
+        > {log}
+        mv {params.outdir}.Trinity.fasta {output.fasta}
+        """
 
 
 rule assembly_gene_to_trans_map:
@@ -124,13 +127,12 @@ rule assembly_gene_to_trans_map:
     log:
         assembly + "gene_to_trans_map.log"
     benchmark:
-        assembly + "gene_to_trans_map.json"
+        assembly + "gene_to_trans_map.bmk"
+    conda:
+        "assembly.yml"
     shell:
-        "get_Trinity_gene_to_trans_map.pl "
-        "< {input.fasta} "
-        "> {output.tsv} "
+        "get_Trinity_gene_to_trans_map.pl < {input.fasta} > {output.tsv} "
         "2> {log}"
-
 
 
 rule assembly_index_trinity:
@@ -144,7 +146,9 @@ rule assembly_index_trinity:
     log:
         assembly + "index.log"
     benchmark:
-        assembly + "index.json"
+        assembly + "index.bmk"
+    conda:
+        "assembly.yml"
     shell:
-        "samtools faidx {input.fasta} "
-        "2> {log} 1>&2"
+        "samtools faidx {input.fasta} 2> {log} 1>&2"
+

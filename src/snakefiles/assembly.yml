@@ -1,0 +1,8 @@
+# Environment to assemble with trinity
+---
+channels:
+  - bioconda
+dependencies:
+  - trinity=2.3.2
+  - khmer=2.0
+  - bowtie2=2.3.2
