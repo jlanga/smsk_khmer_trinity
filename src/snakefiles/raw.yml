@@ -1,0 +1,7 @@
+# Environment to make links and fastq reports
+---
+channels:
+  - bioconda
+dependencies:
+  - fastqc=0.11.5
+  - multiqc=0.8

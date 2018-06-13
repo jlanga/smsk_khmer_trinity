@@ -16,6 +16,8 @@ rule assembly_split_pe_files:
         assembly + "split_pe_files_{sample}.log"
     benchmark:
         assembly + "split_pe_files_{sample}.json"
+    conda:
+        "assembly.yml"
     shell:
         "split-paired-reads.py "
             "--output-first >(pigz --best > {output.left}) "
@@ -60,6 +62,8 @@ rule assembly_merge_right_and_left:
         assembly + "merge_right_and_left.log"
     benchmark:
         assembly + "merge_right_and_left.json"
+    conda:
+        "assembly.yml"
     shell:
         "gzip --decompress --stdout "
             "{input.forward} "
@@ -98,6 +102,8 @@ rule assembly_run_trinity:
         assembly + "run_trinity.log"
     benchmark:
         assembly + "run_trinity.json"
+    conda:
+        "assembly.yml"
     shell:
         "Trinity "
             "--seqType fq "
@@ -125,6 +131,8 @@ rule assembly_gene_to_trans_map:
         assembly + "gene_to_trans_map.log"
     benchmark:
         assembly + "gene_to_trans_map.json"
+    conda:
+        "assembly.yml"
     shell:
         "get_Trinity_gene_to_trans_map.pl "
         "< {input.fasta} "
@@ -145,6 +153,8 @@ rule assembly_index_trinity:
         assembly + "index.log"
     benchmark:
         assembly + "index.json"
+    conda:
+        "assembly.yml"
     shell:
         "samtools faidx {input.fasta} "
         "2> {log} 1>&2"

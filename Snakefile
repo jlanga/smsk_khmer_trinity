@@ -1,5 +1,5 @@
 shell.prefix("set -euo pipefail;")
-configfile: "src/config.yaml"
+configfile: "config.yaml"
 
 
 SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
@@ -24,11 +24,12 @@ include: snakefiles + "tissue.py"
 
 rule all:
     input:
-        transrate + "assemblies.csv",
+        # transrate + "assemblies.csv",
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
         norm + "multiqc_report.html",
-        expand(
-            tissue + "ids_{sample}.tsv",
-            sample = SAMPLES_PE
-        ) 
+        assembly + "Trinity.fasta",
+        # expand(
+        #    tissue + "ids_{sample}.tsv",
+        #    sample = SAMPLES_PE
+        # )

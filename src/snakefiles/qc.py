@@ -37,6 +37,8 @@ rule qc_trimmomatic_pe:
         50
     threads:
         ALL_THREADS
+    conda:
+        "qc.yml"
     shell:
         "(trimmomatic PE "
             "-threads {threads} "
@@ -85,6 +87,8 @@ rule qc_trimmomatic_se:
         qc + "trimmomatic_se_{sample}.json"
     threads:
         ALL_THREADS
+    conda:
+        "qc.yml"
     shell:
         "trimmomatic SE "
             "-threads {threads} "
@@ -108,6 +112,8 @@ rule qc_decompress_pe_sample:
         qc + "decompress_pe_{sample}.log"
     benchmark:
         qc + "decompress_pe_{sample}.json"
+    conda:
+        "qc.yml"
     shell:
         "gzip --decompress --keep {input.forward} {input.reverse} 2> {log}"
 
@@ -127,6 +133,8 @@ rule qc_interleave_pe_pe:
         qc + "interleave_pe_{sample}.log"
     benchmark:
         qc + "interleave_pe_{sample}.json"
+    conda:
+        "qc.yml"
     shell:
         "(interleave-reads.py "
             "<(gzip --decompress --stdout {input.forward}) "
@@ -171,6 +179,8 @@ rule qc_fastqc_sample_pair:
         qc + "fastqc_{sample}_{pair}.log"
     benchmark:
         qc + "fastqc_{sample}_{pair}.json"
+    conda:
+        "qc.yml"
     shell:
         "fastqc "
             "--nogroup "
@@ -203,6 +213,8 @@ rule qc_multiqc:
         qc + "multiqc.log"
     benchmark:
         qc + "multiqc.json"
+    conda:
+        "qc.yml"
     shell:
         "multiqc "
             "--title QC "
