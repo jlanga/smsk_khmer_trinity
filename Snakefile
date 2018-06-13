@@ -1,4 +1,5 @@
 shell.prefix("set -euo pipefail;")
+
 configfile: "config.yml"
 
 

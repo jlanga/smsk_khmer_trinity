@@ -9,6 +9,7 @@ rule assembly_split_pe_files:
         right = assembly + "{sample}_2.fq.gz"
     params:
         left = "{sample}.final.pe_pe.fq.gz.1",
+
         right = "{sample}.final.pe_pe.fq.gz.2"
     log:
         assembly + "split_pe_files_{sample}.log"
@@ -150,3 +151,4 @@ rule assembly_index_trinity:
         "assembly.yml"
     shell:
         "samtools faidx {input.fasta} 2> {log} 1>&2"
+

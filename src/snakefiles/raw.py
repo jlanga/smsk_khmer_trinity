@@ -8,6 +8,7 @@ def get_path_reverse(wildcards):
     return config["samples_pe"][wildcards.sample]["reverse"]
 
 
+
 rule raw_make_links_pe_sample:
     """
     Make a link next to the original file, with a prettier name than default.
@@ -70,6 +71,7 @@ rule raw_fastqc_pe_sample:
         html2 = protected(raw + "{sample}_2_fastqc.html"),
         zip1 = protected(raw + "{sample}_1_fastqc.zip"),
         zip2 = protected(raw + "{sample}_2_fastqc.zip")
+
     threads:
         2
     params:
@@ -156,6 +158,7 @@ rule raw_results:
     input:
         expand(
             raw + "{sample}_{end}.fq.gz",
+
             sample=SAMPLES_PE,
             end="1 2".split()
         ),
@@ -164,7 +167,7 @@ rule raw_results:
             sample=SAMPLES_SE
         )
 
-
+        
 rule raw_doc:
     """Checkpoint to generate all reports for raw data"""
     input:

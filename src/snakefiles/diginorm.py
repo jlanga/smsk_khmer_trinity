@@ -131,7 +131,6 @@ rule diginorm_normalize_by_median_sample_se:
         ALL_THREADS
     params:
         cutoff = config["diginorm_params"]["cutoff"],
-        ksize = config["diginorm_params"]["ksize"],
         n_tables = config["diginorm_params"]["n_tables"],
         max_table_size = config["diginorm_params"]["max_table_size"]
     log:
@@ -152,6 +151,7 @@ rule diginorm_normalize_by_median_sample_se:
             <(gzip --decompress --stdout {input.fastq}) \
         > {log} 2>&1
         """
+
 
 
 rule diginorm_filter_abund_sample_pair:
@@ -183,7 +183,6 @@ rule diginorm_filter_abund_sample_pair:
             {input.fastq} \
         > {log} 2>&1
         """
-
 
 rule diginorm_extract_paired_reads_sample:
     """
