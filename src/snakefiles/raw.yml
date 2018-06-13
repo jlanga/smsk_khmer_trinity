@@ -1,5 +1,6 @@
 # Environment to make links and fastq reports
 ---
+name: raw
 channels:
   - bioconda
 dependencies:

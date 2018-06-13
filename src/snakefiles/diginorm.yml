@@ -1,5 +1,6 @@
 # Environment to perform Read Normalization with khmer
 ---
+name: diginorm
 channels:
   - bioconda
 dependencies:
