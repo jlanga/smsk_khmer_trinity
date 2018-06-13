@@ -27,22 +27,22 @@ rule qc_trimmomatic_pe:
         Total: 8
     """
     input:
-        forward = raw + "{sample}_1.fq.gz",
-        reverse = raw + "{sample}_2.fq.gz"
+        forward = RAW + "{sample}_1.fq.gz",
+        reverse = RAW + "{sample}_2.fq.gz"
     output:
-        forward = temp(qc + "{sample}_1.fq.gz"),
-        reverse = temp(qc + "{sample}_2.fq.gz"),
-        unpaired = protected(qc + "{sample}.final.pe_se.fq.gz")
+        forward = temp(QC + "{sample}_1.fq.gz"),
+        reverse = temp(QC + "{sample}_2.fq.gz"),
+        unpaired = protected(QC + "{sample}.final.pe_se.fq.gz")
     params:
-        unpaired_1 = qc + "{sample}_3.fq.gz",
-        unpaired_2 = qc + "{sample}_4.fq.gz",
+        unpaired_1 = QC + "{sample}_3.fq.gz",
+        unpaired_2 = QC + "{sample}_4.fq.gz",
         adaptor = get_adaptor_pe,
         phred = get_phred_pe,
         trimmomatic_params = config["trimmomatic_params"]
     log:
-        qc + "trimmomatic_pe_{sample}.log"
+        QC + "trimmomatic_pe_{sample}.log"
     benchmark:
-        qc + "trimmomatic_pe_{sample}.bmk"
+        QC + "trimmomatic_pe_{sample}.bmk"
     priority:
         50
     threads:
@@ -95,9 +95,9 @@ rule qc_trimmomatic_se:
         1 for gzip output
     """
     input:
-        single = raw + "{sample}_se.fq.gz",
+        single = RAW + "{sample}_se.fq.gz",
     output:
-        single = protected(qc + "{sample}.final.se.fq.gz")
+        single = protected(QC + "{sample}.final.se.fq.gz")
     params:
         adaptor = get_adaptor_se,
         phred = get_phred_se,
@@ -105,9 +105,9 @@ rule qc_trimmomatic_se:
     priority:
         50
     log:
-        qc + "trimmomatic_se_{sample}.log"
+        QC + "trimmomatic_se_{sample}.log"
     benchmark:
-        qc + "trimmomatic_se_{sample}.bmk"
+        QC + "trimmomatic_se_{sample}.bmk"
     threads:
         ALL_THREADS
     conda:
@@ -128,15 +128,15 @@ rule qc_trimmomatic_se:
 
 rule qc_decompress_pe_sample:
     input:
-        forward = qc + "{sample}_1.fq.gz",
-        reverse = qc + "{sample}_2.fq.gz"
+        forward = QC + "{sample}_1.fq.gz",
+        reverse = QC + "{sample}_2.fq.gz"
     output:
-        forward = temp(qc + "{sample}_1.fq"),
-        reverse = temp(qc + "{sample}_2.fq")
+        forward = temp(QC + "{sample}_1.fq"),
+        reverse = temp(QC + "{sample}_2.fq")
     log:
-        qc + "decompress_pe_{sample}.log"
+        QC + "decompress_pe_{sample}.log"
     benchmark:
-        qc + "decompress_pe_{sample}.bmk"
+        QC + "decompress_pe_{sample}.bmk"
     conda:
         "qc.yml"
     shell:
@@ -149,14 +149,14 @@ rule qc_interleave_pe_pe:
     Read the inputs, interleave, filter the stream and compress.
     """
     input:
-        forward = qc + "{sample}_1.fq.gz",
-        reverse = qc + "{sample}_2.fq.gz"
+        forward = QC + "{sample}_1.fq.gz",
+        reverse = QC + "{sample}_2.fq.gz"
     output:
-        interleaved = protected(qc + "{sample}.final.pe_pe.fq.gz")
+        interleaved = protected(QC + "{sample}.final.pe_pe.fq.gz")
     log:
-        qc + "interleave_pe_{sample}.log"
+        QC + "interleave_pe_{sample}.log"
     benchmark:
-        qc + "interleave_pe_{sample}.bmk"
+        QC + "interleave_pe_{sample}.bmk"
     conda:
         "qc.yml"
     shell:
@@ -174,12 +174,12 @@ rule qc_results:
     """Generate only the resulting files, not the reports"""
     input:
         pe_files = expand(
-            qc + "{sample}.final.{pair}.fq.gz",
+            QC + "{sample}.final.{pair}.fq.gz",
             sample=SAMPLES_PE,
             pair="pe_pe pe_se".split()
         ),
         se_files = expand(
-            qc + "{sample}.final.se.fq.gz",
+            QC + "{sample}.final.se.fq.gz",
             sample=SAMPLES_SE
         )
 
@@ -191,18 +191,18 @@ rule qc_fastqc_sample_pair:
     One thread per fastq.gz file
     """
     input:
-        fastq = qc + "{sample}.final.{pair}.fq.gz"
+        fastq = QC + "{sample}.final.{pair}.fq.gz"
     output:
-        zip = protected(qc + "{sample}.final.{pair}_fastqc.zip"),
-        html = protected(qc + "{sample}.final.{pair}_fastqc.html")
+        zip = protected(QC + "{sample}.final.{pair}_fastqc.zip"),
+        html = protected(QC + "{sample}.final.{pair}_fastqc.html")
     threads:
         1
     params:
-        outdir = qc
+        outdir = QC
     log:
-        qc + "fastqc_{sample}_{pair}.log"
+        QC + "fastqc_{sample}_{pair}.log"
     benchmark:
-        qc + "fastqc_{sample}_{pair}.bmk"
+        QC + "fastqc_{sample}_{pair}.bmk"
     conda:
         "qc.yml"
     shell:
@@ -212,26 +212,26 @@ rule qc_fastqc_sample_pair:
 rule qc_multiqc:
     input:
         pe_files = expand(
-            qc + "{sample}.final.{pair}_fastqc.{extension}",
+            QC + "{sample}.final.{pair}_fastqc.{extension}",
             sample=SAMPLES_PE,
             pair="pe_pe pe_se".split(),
             extension="html zip".split()
         ),
         se_files = expand(
-            qc + "{sample}.final.se_fastqc.{extension}",
+            QC + "{sample}.final.se_fastqc.{extension}",
             sample=SAMPLES_SE,
             extension="html zip".split()
         )
     output:
-        html = protected(qc + "multiqc_report.html")
+        html = protected(QC + "multiqc_report.html")
     threads:
         1
     params:
-        folder = qc
+        folder = QC
     log:
-        qc + "multiqc.log"
+        QC + "multiqc.log"
     benchmark:
-        qc + "multiqc.bmk"
+        QC + "multiqc.bmk"
     conda:
         "qc.yml"
     shell:
@@ -240,20 +240,20 @@ rule qc_multiqc:
 
 rule qc_doc:
     input:
-        html = qc + "multiqc_report.html"
+        html = QC + "multiqc_report.html"
 
 
 rule qc:
     """qc_results + qc_doc"""
     input:
         pe_files = expand(
-            qc + "{sample}.final.{pair}_fastqc.{extension}",
+            QC + "{sample}.final.{pair}_fastqc.{extension}",
             sample=SAMPLES_PE,
             pair="pe_pe pe_se".split(),
             extension="html zip".split()
         ),
         se_files = expand(
-            qc + "{sample}.final.se.fq.gz",
+            QC + "{sample}.final.se.fq.gz",
             sample=SAMPLES_SE
         ),
-        report = qc + "multiqc_report.html"
+        report = QC + "multiqc_report.html"

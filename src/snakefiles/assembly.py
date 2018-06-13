@@ -3,18 +3,17 @@ rule assembly_split_pe_files:
     Split pe_pe files into _1 and _2.
     """
     input:
-        fastq_pe = norm + "{sample}.final.pe_pe.fq.gz"
+        fastq_pe = NORM + "{sample}.final.pe_pe.fq.gz"
     output:
-        left = assembly + "{sample}_1.fq.gz",
-        right = assembly + "{sample}_2.fq.gz"
+        left = ASSEMBLY + "{sample}_1.fq.gz",
+        right = ASSEMBLY + "{sample}_2.fq.gz"
     params:
         left = "{sample}.final.pe_pe.fq.gz.1",
-
         right = "{sample}.final.pe_pe.fq.gz.2"
     log:
-        assembly + "split_pe_files_{sample}.log"
+        ASSEMBLY + "split_pe_files_{sample}.log"
     benchmark:
-        assembly + "split_pe_files_{sample}.bmk"
+        ASSEMBLY + "split_pe_files_{sample}.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -41,28 +40,28 @@ rule assembly_merge_right_and_left:
     """
     input:
         forward = expand(
-            assembly + "{sample}_1.fq.gz",
+            ASSEMBLY + "{sample}_1.fq.gz",
             sample=SAMPLES_PE
         ) if SAMPLES_PE else ["/dev/null"],
         reverse = expand(
-            assembly + "{sample}_2.fq.gz",
+            ASSEMBLY + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
         ) if SAMPLES_PE else ["/dev/null"],
         single = expand(  # pe_se
-            norm + "{sample}.final.pe_se.fq.gz",
+            NORM + "{sample}.final.pe_se.fq.gz",
             sample=SAMPLES_PE
         ) + expand(  # se
-            norm + "{sample}.final.se.fq.gz",
+            NORM + "{sample}.final.se.fq.gz",
             sample=SAMPLES_SE
         )
     output:
-        left = assembly + "left.fq",
-        right = assembly + "right.fq",
-        single = assembly + "single.fq"
+        left = ASSEMBLY + "left.fq",
+        right = ASSEMBLY + "right.fq",
+        single = ASSEMBLY + "single.fq"
     log:
-        assembly + "merge_right_and_left.log"
+        ASSEMBLY + "merge_right_and_left.log"
     benchmark:
-        assembly + "merge_right_and_left.bmk"
+        ASSEMBLY + "merge_right_and_left.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -82,22 +81,22 @@ rule assembly_run_trinity:
         - Does the full cleanup so it only remains a fasta file.
     """
     input:
-        left = assembly + "left.fq",
-        right = assembly + "right.fq",
-        # single = assembly + "single.fq"
+        left = ASSEMBLY + "left.fq",
+        right = ASSEMBLY + "right.fq",
+        # single = ASSEMBLY + "single.fq"
     output:
-        fasta = protected(assembly + "Trinity.fasta")
+        fasta = protected(ASSEMBLY + "Trinity.fasta")
     threads:
         ALL_THREADS
     priority:
         50
     params:
         memory = config["trinity_params"]["memory"],
-        outdir = assembly + "trinity_out_dir"
+        outdir = ASSEMBLY + "trinity_out_dir"
     log:
-        assembly + "run_trinity.log"
+        ASSEMBLY + "run_trinity.log"
     benchmark:
-        assembly + "run_trinity.bmk"
+        ASSEMBLY + "run_trinity.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -121,13 +120,13 @@ rule assembly_gene_to_trans_map:
     Create the gene_id TAB transcript_id file
     """
     input:
-        fasta = assembly + "Trinity.fasta"
+        fasta = ASSEMBLY + "Trinity.fasta"
     output:
-        tsv = assembly + "Trinity_gene_to_trans.tsv"
+        tsv = ASSEMBLY + "Trinity_gene_to_trans.tsv"
     log:
-        assembly + "gene_to_trans_map.log"
+        ASSEMBLY + "gene_to_trans_map.log"
     benchmark:
-        assembly + "gene_to_trans_map.bmk"
+        ASSEMBLY + "gene_to_trans_map.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -140,13 +139,13 @@ rule assembly_index_trinity:
     Create a samtool index for the assembly
     """
     input:
-        fasta = assembly + "Trinity.fasta"
+        fasta = ASSEMBLY + "Trinity.fasta"
     output:
-        fai = assembly + "Trinity.fasta.fai"
+        fai = ASSEMBLY + "Trinity.fasta.fai"
     log:
-        assembly + "index.log"
+        ASSEMBLY + "index.log"
     benchmark:
-        assembly + "index.bmk"
+        ASSEMBLY + "index.bmk"
     conda:
         "assembly.yml"
     shell:

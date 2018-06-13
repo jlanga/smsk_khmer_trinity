@@ -28,7 +28,7 @@ rule all:
         - Assembly
     """
     input:
-        raw + "multiqc_report.html",
-        qc + "multiqc_report.html",
-        norm + "multiqc_report.html",
-        assembly + "Trinity.fasta"
+        RAW + "multiqc_report.html",
+        QC + "multiqc_report.html",
+        NORM + "multiqc_report.html",
+        ASSEMBLY + "Trinity.fasta"

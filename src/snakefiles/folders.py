@@ -1,6 +1,6 @@
 # Folder variables
 
-raw = "results/raw/"
-qc = "results/qc/"
-norm = "results/diginorm/"
-assembly = "results/assembly/"
+RAW = "results/raw/"
+QC = "results/qc/"
+NORM = "results/diginorm/"
+ASSEMBLY = "results/assembly/"
