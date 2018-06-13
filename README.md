@@ -2,6 +2,7 @@
 
 [![Build Status](https://travis-ci.org/jlanga/smsk_khmer_trinity.svg?branch=master)](https://travis-ci.org/jlanga/smsk_khmer_trinity)
 
+
 ## 1. Description
 
 This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
@@ -12,35 +13,19 @@ This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
 
 3. Assembles with `trinity`
 
+
 ## 2. First steps
 
 Just follow what is inside the `.travis.yml`
 
-1. Update your system (Ubuntu Trusty in this case):
-    ```sh
-    sudo apt-get -qq update
-    sudo apt-get install -y build-essential curl git
-    ```
+0. Install `conda`
 
-2. Clone this repo and get inside
-    ```sh
-    git clone https://github.com/jlanga/smsk_khmer_trinity
-    cd smsk_khmer_trinity
-    ```
+1. Clone this repo
 
-3. "Activate" an environment (extend paths)
-    ```sh
-    bash bin/install/conda_env.sh
-    source activate smsk_khmer_trinity
-    ```
+2. Add your samples to `config.yaml`
 
-4. Execute the pipeline with test data:
+3. Run snakemake: ``snakemake --use-conda -j
 
-    ```sh
-    snakemake -j 16
-    ```
-
-5. Modify the `config.yaml` at your will
 
 ## 3. File organization
 
