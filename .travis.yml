@@ -30,15 +30,14 @@ before_install:
 
 install:
   - bash .travis/travis_install.sh
-  - export PATH="$HOME"/miniconda3_"$TRAVIS_OS_NAME":"$PATH"
+  - export PATH="$HOME"/miniconda3_"$TRAVIS_OS_NAME"/bin:"$PATH"
   - echo $PATH
   - conda install --yes --channel bioconda snakemake
 
 script:
   - echo $PATH
   - python --version
-  - export PATH="$HOME"/miniconda3_$TRAVIS_OS_NAME:$PATH"
-  - source activate smsk_khmer_trinity
+  - export PATH="$HOME"/miniconda3_"$TRAVIS_OS_NAME"/bin:$PATH"
   - snakemake --use-conda --jobs 2
 
 after_faillure:
