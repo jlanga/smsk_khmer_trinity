@@ -2,9 +2,6 @@ dist: trusty
 
 language: bash
 
-services:
-  - docker
-
 addons:
     apt_packages:
         - build-essential
@@ -12,17 +9,36 @@ addons:
         - curl
 
 cache:
+    pip: true
     directories:
         - $HOME/download/
-        #- $HOME/miniconda3/
+        - $HOME/miniconda3_$TRAVIS_OS_NAME
+
+matrix:
+    include:
+      - os: linux
+        dist: trusty
+        sudo: required
+        addons:
+          apt-packages:
+            - build-essential
+            - git
+            - curl
 
 before_install:
   - bash .travis/travis_before_install.sh
-  - export PATH="/home/travis/miniconda3/bin:$PATH"
 
 install:
-  - bash src/install/conda_env.sh
+  - export PATH="/home/travis/miniconda3/bin:$PATH"
+  - bash .travis/travis_install.sh
+  - conda install --yes -c bioconda snakemake
 
 script:
+  - echo $PATH
+  - python --version
+  - export export PATH="/home/travis/miniconda3/bin:$PATH"
   - source activate smsk_khmer_trinity
-  - snakemake -j2
+  - snakemake --use-conda --jobs 2
+
+after_faillure:
+  - find results -name "*.log" -exec tail -vn +0 {} \; -exec echo -e "" \;
