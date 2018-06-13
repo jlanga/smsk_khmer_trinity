@@ -15,7 +15,7 @@ rule assembly_split_pe_files:
     log:
         assembly + "split_pe_files_{sample}.log"
     benchmark:
-        assembly + "split_pe_files_{sample}.json"
+        assembly + "split_pe_files_{sample}.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -61,7 +61,7 @@ rule assembly_merge_right_and_left:
     log:
         assembly + "merge_right_and_left.log"
     benchmark:
-        assembly + "merge_right_and_left.json"
+        assembly + "merge_right_and_left.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -101,7 +101,7 @@ rule assembly_run_trinity:
     log:
         assembly + "run_trinity.log"
     benchmark:
-        assembly + "run_trinity.json"
+        assembly + "run_trinity.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -130,7 +130,7 @@ rule assembly_gene_to_trans_map:
     log:
         assembly + "gene_to_trans_map.log"
     benchmark:
-        assembly + "gene_to_trans_map.json"
+        assembly + "gene_to_trans_map.bmk"
     conda:
         "assembly.yml"
     shell:
@@ -152,7 +152,7 @@ rule assembly_index_trinity:
     log:
         assembly + "index.log"
     benchmark:
-        assembly + "index.json"
+        assembly + "index.bmk"
     conda:
         "assembly.yml"
     shell:

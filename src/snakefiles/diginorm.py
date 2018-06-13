@@ -21,7 +21,7 @@ rule diginorm_load_into_counting:
     log:
         norm + "load_into_counting.log"
     benchmark:
-        norm + "load_into_counting.json"
+        norm + "load_into_counting.bmk"
     params:
         ksize= config["diginorm_params"]["ksize"],
         max_table_size= config["diginorm_params"]["max_table_size"],
@@ -61,7 +61,7 @@ rule diginorm_normalize_by_median_sample_pe_pe:
     log:
         norm + "normalize_by_median_{sample}.pe_pe.log"
     benchmark:
-        norm + "normalize_by_median_{sample}.pe_pe.json"
+        norm + "normalize_by_median_{sample}.pe_pe.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -98,7 +98,7 @@ rule diginorm_normalize_by_median_sample_pe_se:
     log:
         norm + "normalize_by_median_{sample}_pe_se.log"
     benchmark:
-        norm + "normalize_by_median_{sample}_pe_se.json"
+        norm + "normalize_by_median_{sample}_pe_se.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -134,7 +134,7 @@ rule diginorm_normalize_by_median_sample_se:
     log:
         norm + "normalize_by_median_{sample}_se.log"
     benchmark:
-        norm + "normalize_by_median_{sample}_se.json"
+        norm + "normalize_by_median_{sample}_se.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -167,7 +167,7 @@ rule diginorm_filter_abund_sample_pair:
     log:
         norm + "filter_abund_{sample}_{pair}.log"
     benchmark:
-        norm + "filter_abunt_{sample}_{pair}.json"
+        norm + "filter_abunt_{sample}_{pair}.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -195,7 +195,7 @@ rule diginorm_extract_paired_reads_sample:
     log:
         norm + "extract_paired_reads_{sample}.log"
     benchmark:
-        norm + "extract_paired_reads_{sample}.json"
+        norm + "extract_paired_reads_{sample}.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -218,7 +218,7 @@ rule diginorm_merge_pe_single_reads_sample:
     log:
         norm + "merge_single_reads_{sample}.log"
     benchmark:
-        norm + "merge_single_reads_{sample}.json"
+        norm + "merge_single_reads_{sample}.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -243,7 +243,7 @@ rule dignorm_get_former_se_reads_sample:
     log:
         norm + "get_former_se_reads_{sample}.log"
     benchmark:
-        norm + "get_former_se_reads_{sample}.json"
+        norm + "get_former_se_reads_{sample}.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -281,7 +281,7 @@ rule diginorm_fastqc_sample_pair:
     log:
         norm + "fastqc_{sample}_{pair}.log"
     benchmark:
-        norm + "fastqc_{sample}_{pair}.json"
+        norm + "fastqc_{sample}_{pair}.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -313,7 +313,7 @@ rule diginorm_multiqc:
     log:
         norm + "multiqc.log"
     benchmark:
-        norm + "multiqc.json"
+        norm + "multiqc.bmk"
     conda:
         "diginorm.yml"
     shell:
