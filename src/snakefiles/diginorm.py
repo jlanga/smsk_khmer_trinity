@@ -132,7 +132,8 @@ rule diginorm_normalize_by_median_sample_se:
     params:
         cutoff = config["diginorm_params"]["cutoff"],
         n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"]
+        max_table_size = config["diginorm_params"]["max_table_size"],
+        ksize = config["diginorm_params"]["ksize"]
     log:
         norm + "normalize_by_median_{sample}_se.log"
     benchmark:
@@ -151,7 +152,6 @@ rule diginorm_normalize_by_median_sample_se:
             <(gzip --decompress --stdout {input.fastq}) \
         > {log} 2>&1
         """
-
 
 
 rule diginorm_filter_abund_sample_pair:
@@ -183,6 +183,7 @@ rule diginorm_filter_abund_sample_pair:
             {input.fastq} \
         > {log} 2>&1
         """
+
 
 rule diginorm_extract_paired_reads_sample:
     """

@@ -8,7 +8,6 @@ def get_path_reverse(wildcards):
     return config["samples_pe"][wildcards.sample]["reverse"]
 
 
-
 rule raw_make_links_pe_sample:
     """
     Make a link next to the original file, with a prettier name than default.
@@ -167,7 +166,7 @@ rule raw_results:
             sample=SAMPLES_SE
         )
 
-        
+
 rule raw_doc:
     """Checkpoint to generate all reports for raw data"""
     input:

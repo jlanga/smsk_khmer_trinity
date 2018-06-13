@@ -83,7 +83,6 @@ def get_phred_se(wildcards):
     return config["samples_se"][wildcards.sample]["phred"]
 
 
-
 rule qc_trimmomatic_se:
     """
     Run trimmomatic on single end mode to eliminate Illumina adaptors and
@@ -242,7 +241,6 @@ rule qc_multiqc:
 rule qc_doc:
     input:
         html = qc + "multiqc_report.html"
-
 
 
 rule qc:

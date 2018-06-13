@@ -151,4 +151,3 @@ rule assembly_index_trinity:
         "assembly.yml"
     shell:
         "samtools faidx {input.fasta} 2> {log} 1>&2"
-
