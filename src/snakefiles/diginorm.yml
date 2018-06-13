@@ -1,0 +1,9 @@
+# Environment to perform Read Normalization with khmer
+---
+channels:
+  - bioconda
+dependencies:
+  - khmer=2.0
+  - fastqc=0.11.5
+  - multiqc=0.8
+  - pigz=2.3
