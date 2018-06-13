@@ -24,7 +24,7 @@ Just follow what is inside the `.travis.yml`
 
 2. Add your samples to `config.yaml`
 
-3. Run snakemake: ``snakemake --use-conda -j
+3. Run snakemake: `snakemake --use-conda -j`
 
 
 ## 3. File organization
