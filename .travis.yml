@@ -37,7 +37,7 @@ install:
 script:
   - echo $PATH
   - python --version
-  - export PATH="$HOME"/miniconda3_"$TRAVIS_OS_NAME"/bin:$PATH"
+  - export PATH="$HOME"/miniconda3_"$TRAVIS_OS_NAME"/bin:"$PATH"
   - snakemake --use-conda --jobs 2
 
 after_faillure:
