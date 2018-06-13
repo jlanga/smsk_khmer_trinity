@@ -1,3 +1,10 @@
 rule clean:
+    """
+    Delete everything
+    """
     shell:
-        "rm -r results"
+        """
+        if [ -d results ]; then
+            rm -r results
+        fi
+        """

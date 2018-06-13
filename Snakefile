@@ -1,5 +1,6 @@
 shell.prefix("set -euo pipefail;")
-configfile: "src/config.yaml"
+
+configfile: "config.yml"
 
 
 SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
@@ -18,17 +19,15 @@ include: snakefiles + "raw.py"
 include: snakefiles + "qc.py"
 include: snakefiles + "diginorm.py"
 include: snakefiles + "assembly.py"
-include: snakefiles + "filtering.py"
-include: snakefiles + "transrate.py"
-include: snakefiles + "tissue.py"
 
 rule all:
+    """
+    Run the entire pipeline:
+        - Reports for raw, trimmed and normalized reads
+        - Assembly
+    """
     input:
-        transrate + "assemblies.csv",
         raw + "multiqc_report.html",
         qc + "multiqc_report.html",
         norm + "multiqc_report.html",
-        expand(
-            tissue + "ids_{sample}.tsv",
-            sample = SAMPLES_PE
-        ) 
+        assembly + "Trinity.fasta"
