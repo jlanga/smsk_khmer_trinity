@@ -12,10 +12,6 @@ This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
 
 3. Assembles with `trinity`
 
-4. Perform some quality control with `transrate`
-
-5. Filter your raw transcriptome to get most representative transcripts from each gene (`kallisto`, `sleuth` and some `R`)
-
 ## 2. First steps
 
 Just follow what is inside the `.travis.yml`
