@@ -1,5 +1,5 @@
 shell.prefix("set -euo pipefail;")
-configfile: "config.yaml"
+configfile: "config.yml"
 
 
 SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
