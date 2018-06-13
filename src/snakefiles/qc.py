@@ -1,3 +1,13 @@
+def get_adaptor_pe(wildcards):
+    """Get the adaptor from a sample"""
+    return config["samples_pe"][wildcards.sample]["adaptor"]
+
+
+def get_phred_pe(wildcards):
+    """Get the adaptor from a sample"""
+    return config["samples_pe"][wildcards.sample]["phred"]
+
+
 rule qc_trimmomatic_pe:
     """
     Run trimmomatic on paired end mode to eliminate Illumina adaptors and
@@ -20,14 +30,14 @@ rule qc_trimmomatic_pe:
         forward = raw + "{sample}_1.fq.gz",
         reverse = raw + "{sample}_2.fq.gz"
     output:
-        forward     = temp(qc + "{sample}_1.fq.gz"),
-        reverse     = temp(qc + "{sample}_2.fq.gz"),
-        unpaired    = protected(qc + "{sample}.final.pe_se.fq.gz")
+        forward = temp(qc + "{sample}_1.fq.gz"),
+        reverse = temp(qc + "{sample}_2.fq.gz"),
+        unpaired = protected(qc + "{sample}.final.pe_se.fq.gz")
     params:
-        unpaired_1  = qc + "{sample}_3.fq.gz",
-        unpaired_2  = qc + "{sample}_4.fq.gz",
-        adaptor     = lambda wildcards: config["samples_pe"][wildcards.sample]["adaptor"],
-        phred       = lambda wildcards: config["samples_pe"][wildcards.sample]["phred"],
+        unpaired_1 = qc + "{sample}_3.fq.gz",
+        unpaired_2 = qc + "{sample}_4.fq.gz",
+        adaptor = get_adaptor_pe,
+        phred = get_phred_pe,
         trimmomatic_params = config["trimmomatic_params"]
     log:
         qc + "trimmomatic_pe_{sample}.log"
@@ -40,24 +50,37 @@ rule qc_trimmomatic_pe:
     conda:
         "qc.yml"
     shell:
-        "(trimmomatic PE "
-            "-threads {threads} "
-            "-{params.phred} "
-            "<(gzip --decompress --stdout {input.forward}) "
-            "<(gzip --decompress --stdout {input.reverse}) "
-            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.forward}) "
-            "{params.unpaired_1} "
-            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.reverse}) "
-            "{params.unpaired_2} "
-            "ILLUMINACLIP:{params.adaptor}:2:30:10 "
-            "{params.trimmomatic_params} ; "
-        "gzip --decompress --stdout {params.unpaired_1} {params.unpaired_2} "
-            "| cut --fields 1 --delimiter \" \" "
-            "| pigz --best "
-        "> {output.unpaired} ; "
-        "rm {params.unpaired_1} {params.unpaired_2}) "
-        "2> {log}"
+        """
+        (trimmomatic PE \
+            -threads {threads} \
+            -{params.phred} \
+            <(gzip --decompress --stdout {input.forward}) \
+            <(gzip --decompress --stdout {input.reverse}) \
+            >(  cut --fields 1 --delimiter \" \" \
+                | pigz --best > {output.forward}) \
+            {params.unpaired_1} \
+            >(  cut --fields 1 --delimiter \" \" \
+                | pigz --best > {output.reverse}) \
+            {params.unpaired_2} \
+            ILLUMINACLIP:{params.adaptor}:2:30:10 \
+            {params.trimmomatic_params}
+        gzip --decompress --stdout {params.unpaired_1} {params.unpaired_2} \
+        | cut --fields 1 --delimiter \" \" \
+        | pigz --best \
+        > {output.unpaired}
+        rm {params.unpaired_1} {params.unpaired_2}) \
+        2> {log}
+        """
 
+
+def get_adaptor_se(wildcards):
+    """Get the adaptor from a sample"""
+    return config["samples_se"][wildcards.sample]["adaptor"]
+
+
+def get_phred_se(wildcards):
+    """Get the adaptor from a sample"""
+    return config["samples_se"][wildcards.sample]["phred"]
 
 
 rule qc_trimmomatic_se:
@@ -76,8 +99,8 @@ rule qc_trimmomatic_se:
     output:
         single = protected(qc + "{sample}.final.se.fq.gz")
     params:
-        adaptor = lambda wildcards: config["samples_se"][wildcards.sample]["adaptor"],
-        phred = lambda wildcards: config["samples_se"][wildcards.sample]["phred"],
+        adaptor = get_adaptor_se,
+        phred = get_phred_se,
         trimmomatic_params = config["trimmomatic_params"]
     priority:
         50
@@ -90,15 +113,17 @@ rule qc_trimmomatic_se:
     conda:
         "qc.yml"
     shell:
-        "trimmomatic SE "
-            "-threads {threads} "
-            "-{params.phred} "
-            "<(gzip --decompress --stdout {input.single}) "
-            ">(cut --fields 1 --delimiter \" \" | pigz --best > {output.single}) "
-            "ILLUMINACLIP:{params.adaptor}:2:30:10 "
-            "{params.trimmomatic_params} "
-        "2> {log}"
-
+        """
+        trimmomatic SE \
+            -threads {threads} \
+            -{params.phred} \
+            <(gzip --decompress --stdout {input.single}) \
+            >(  cut --fields 1 --delimiter \" \" \
+                | pigz --best > {output.single}) \
+            ILLUMINACLIP:{params.adaptor}:2:30:10 \
+            {params.trimmomatic_params} \
+        2> {log}
+        """
 
 
 rule qc_decompress_pe_sample:
@@ -118,17 +143,16 @@ rule qc_decompress_pe_sample:
         "gzip --decompress --keep {input.forward} {input.reverse} 2> {log}"
 
 
-
 rule qc_interleave_pe_pe:
     """
     From the adaptor free _1 and _2 , interleave the reads.
     Read the inputs, interleave, filter the stream and compress.
     """
     input:
-        forward= qc + "{sample}_1.fq.gz",
-        reverse= qc + "{sample}_2.fq.gz"
+        forward = qc + "{sample}_1.fq.gz",
+        reverse = qc + "{sample}_2.fq.gz"
     output:
-        interleaved= protected(qc + "{sample}.final.pe_pe.fq.gz")
+        interleaved = protected(qc + "{sample}.final.pe_pe.fq.gz")
     log:
         qc + "interleave_pe_{sample}.log"
     benchmark:
@@ -136,28 +160,28 @@ rule qc_interleave_pe_pe:
     conda:
         "qc.yml"
     shell:
-        "(interleave-reads.py "
-            "<(gzip --decompress --stdout {input.forward}) "
-            "<(gzip --decompress --stdout {input.reverse}) "
-            "| pigz --best "
-        "> {output.interleaved}) "
-        "2> {log}"
-
+        """
+        (interleave-reads.py \
+            <(gzip --decompress --stdout {input.forward}) \
+            <(gzip --decompress --stdout {input.reverse}) \
+        | pigz --best \
+        > {output.interleaved}) \
+        2> {log}
+        """
 
 
 rule qc_results:
-    '''Generate only the resulting files, not the reports'''
+    """Generate only the resulting files, not the reports"""
     input:
         pe_files = expand(
             qc + "{sample}.final.{pair}.fq.gz",
-            sample = SAMPLES_PE,
-            pair = "pe_pe pe_se".split()
+            sample=SAMPLES_PE,
+            pair="pe_pe pe_se".split()
         ),
         se_files = expand(
             qc + "{sample}.final.se.fq.gz",
-            sample = SAMPLES_SE
+            sample=SAMPLES_SE
         )
-
 
 
 rule qc_fastqc_sample_pair:
@@ -169,8 +193,8 @@ rule qc_fastqc_sample_pair:
     input:
         fastq = qc + "{sample}.final.{pair}.fq.gz"
     output:
-        zip   = protected(qc + "{sample}.final.{pair}_fastqc.zip"),
-        html  = protected(qc + "{sample}.final.{pair}_fastqc.html")
+        zip = protected(qc + "{sample}.final.{pair}_fastqc.zip"),
+        html = protected(qc + "{sample}.final.{pair}_fastqc.html")
     threads:
         1
     params:
@@ -182,29 +206,24 @@ rule qc_fastqc_sample_pair:
     conda:
         "qc.yml"
     shell:
-        "fastqc "
-            "--nogroup "
-            "--outdir {params.outdir} "
-            "{input.fastq} "
-        "> {log} 2>&1"
-
+        "fastqc --nogroup --outdir {params.outdir} {input.fastq} > {log} 2>&1"
 
 
 rule qc_multiqc:
     input:
         pe_files = expand(
             qc + "{sample}.final.{pair}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            pair = "pe_pe pe_se".split(),
-            extension = "html zip".split()
+            sample=SAMPLES_PE,
+            pair="pe_pe pe_se".split(),
+            extension="html zip".split()
         ),
         se_files = expand(
             qc + "{sample}.final.se_fastqc.{extension}",
-            sample = SAMPLES_SE,
-            extension = "html zip".split()
+            sample=SAMPLES_SE,
+            extension="html zip".split()
         )
     output:
-        html= protected(qc + "multiqc_report.html")
+        html = protected(qc + "multiqc_report.html")
     threads:
         1
     params:
@@ -216,18 +235,12 @@ rule qc_multiqc:
     conda:
         "qc.yml"
     shell:
-        "multiqc "
-            "--title QC "
-            "--filename {output.html} "
-            "{params.folder} "
-        "2> {log}"
-
+        "multiqc --title QC --filename {output.html} {params.folder} 2> {log}"
 
 
 rule qc_doc:
     input:
-        html= qc + "multiqc_report.html"
-
+        html = qc + "multiqc_report.html"
 
 
 rule qc:
@@ -235,12 +248,12 @@ rule qc:
     input:
         pe_files = expand(
             qc + "{sample}.final.{pair}_fastqc.{extension}",
-            sample = SAMPLES_PE,
-            pair = "pe_pe pe_se".split(),
-            extension = "html zip".split()
+            sample=SAMPLES_PE,
+            pair="pe_pe pe_se".split(),
+            extension="html zip".split()
         ),
         se_files = expand(
             qc + "{sample}.final.se.fq.gz",
-            sample = SAMPLES_SE
+            sample=SAMPLES_SE
         ),
         report = qc + "multiqc_report.html"
