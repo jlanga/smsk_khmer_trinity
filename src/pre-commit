@@ -19,7 +19,7 @@ do_flake8() {
     flake8 \
         --ignore=E999 \
         Snakefile \
-        "$(find src/ -name "*.py" -type f)"
+        "$(find src/ -name '*.py' -type f)"
 }
 
 do_shellcheck(){
@@ -27,7 +27,7 @@ do_shellcheck(){
         src/pre-commit \
         src/run \
         src/run_cluster \
-        "$(find src/ -name "*.sh" -type f)"
+        "$(find src/ -name '*.sh' -type f)"
 }
 
 do_yamllint(){
