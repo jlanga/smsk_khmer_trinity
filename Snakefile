@@ -2,6 +2,7 @@ shell.prefix("set -euo pipefail;")
 
 configfile: "config.yml"
 
+singularity: "docker://continuumio/miniconda3:4.4.10"
 
 SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
 SAMPLES_SE = config["samples_se"] if config["samples_se"] is not None else []

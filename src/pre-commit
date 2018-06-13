@@ -17,7 +17,9 @@ do_snakemake_dryrun(){
 }
 
 do_pipeline(){
-    snakemake --use-conda -j
+    snakemake \
+	--use-conda \
+	--jobs
 }
 
 do_lint_snakefiles() {
