@@ -10,16 +10,21 @@ set -euo pipefail
 #   yaml: yamllint
 #   r: lintr
 
-do_pipeline() {
-    snakemake clean
+
+do_snakemake_dryrun(){
+    (snakemake clean || True)
+    snakemake --dryrun --printshellcmds
+}
+
+do_pipeline(){
     snakemake --use-conda -j
 }
 
-do_flake8() {
+do_lint_snakefiles() {
     flake8 \
         --ignore=E999 \
         Snakefile \
-        "$(find src/ -name '*.py' -type f)"
+        src/snakefiles/*.py
 }
 
 do_shellcheck(){
@@ -51,17 +56,20 @@ else
         against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
 fi
 
-echo "Running the pipeline"
-do_pipeline || fail Snakemake
+echo "Test snakemake syntax"
+do_snakemake_dryrun || fail do_snakemake_dryrun
 
 echo "Linting Snakefiles"
-do_flake8 || fail flake8
+do_lint_snakefiles || fail do_lint_snakefiles
 
 echo "Linting Shell scripts"
 do_shellcheck || fail shellcheck
 
 echo "Linting YAML files"
 do_yamllint || fail yamllint
+
+echo "Running the pipeline"
+do_pipeline || fail do_pipeline
 
 # If there are whitespace errors, print the offending file names and fail.
 exec git diff-index --check --cached $against --
