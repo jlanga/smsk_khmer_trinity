@@ -70,7 +70,6 @@ rule raw_fastqc_pe:
         html2 = protected(RAW + "{sample}_2_fastqc.html"),
         zip1 = protected(RAW + "{sample}_1_fastqc.zip"),
         zip2 = protected(RAW + "{sample}_2_fastqc.zip")
-
     threads:
         2
     params:
