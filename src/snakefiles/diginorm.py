@@ -26,6 +26,8 @@ rule diginorm_load_into_counting:
         ksize= config["diginorm_params"]["ksize"],
         max_table_size= config["diginorm_params"]["max_table_size"],
         n_tables= config["diginorm_params"]["n_tables"]
+    conda:
+        "diginorm.yml"
     shell:
         "load-into-counting.py "
             "--ksize {params.ksize} "
@@ -60,6 +62,8 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         norm + "normalize_by_median_{sample}.pe_pe.log"
     benchmark:
         norm + "normalize_by_median_{sample}.pe_pe.json"
+    conda:
+        "diginorm.yml"
     shell:
         "normalize-by-median.py "
             "--ksize {params.ksize} "
@@ -95,6 +99,8 @@ rule diginorm_normalize_by_median_sample_pe_se:
         norm + "normalize_by_median_{sample}_pe_se.log"
     benchmark:
         norm + "normalize_by_median_{sample}_pe_se.json"
+    conda:
+        "diginorm.yml"
     shell:
         "normalize-by-median.py "
             "--ksize {params.ksize} "
@@ -129,6 +135,8 @@ rule diginorm_normalize_by_median_sample_se:
         norm + "normalize_by_median_{sample}_se.log"
     benchmark:
         norm + "normalize_by_median_{sample}_se.json"
+    conda:
+        "diginorm.yml"
     shell:
         "normalize-by-median.py "
             "--ksize {params.ksize} "
@@ -160,6 +168,8 @@ rule diginorm_filter_abund_sample_pair:
         norm + "filter_abund_{sample}_{pair}.log"
     benchmark:
         norm + "filter_abunt_{sample}_{pair}.json"
+    conda:
+        "diginorm.yml"
     shell:
         "filter-abund.py "
             "--variable-coverage "
@@ -186,6 +196,8 @@ rule diginorm_extract_paired_reads_sample:
         norm + "extract_paired_reads_{sample}.log"
     benchmark:
         norm + "extract_paired_reads_{sample}.json"
+    conda:
+        "diginorm.yml"
     shell:
         "extract-paired-reads.py "
             "--output-paired >(pigz --best > {output.fastq_pe}) "
@@ -207,6 +219,8 @@ rule diginorm_merge_pe_single_reads_sample:
         norm + "merge_single_reads_{sample}.log"
     benchmark:
         norm + "merge_single_reads_{sample}.json"
+    conda:
+        "diginorm.yml"
     shell:
         "(pigz --decompress --stdout "
             "{input.from_norm} "
@@ -230,6 +244,8 @@ rule dignorm_get_former_se_reads_sample:
         norm + "get_former_se_reads_{sample}.log"
     benchmark:
         norm + "get_former_se_reads_{sample}.json"
+    conda:
+        "diginorm.yml"
     shell:
         "mv {input.single} {output.single}"
 
@@ -266,6 +282,8 @@ rule diginorm_fastqc_sample_pair:
         norm + "fastqc_{sample}_{pair}.log"
     benchmark:
         norm + "fastqc_{sample}_{pair}.json"
+    conda:
+        "diginorm.yml"
     shell:
         "fastqc "
             "--nogroup "
@@ -296,6 +314,8 @@ rule diginorm_multiqc:
         norm + "multiqc.log"
     benchmark:
         norm + "multiqc.json"
+    conda:
+        "diginorm.yml"
     shell:
         "multiqc "
             "--title Diginorm "

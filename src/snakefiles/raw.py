@@ -13,8 +13,8 @@ rule raw_make_links_pe_sample:
     benchmark:
         raw + "make_links_pe_{sample}.json"
     shell:
-        "ln -s $(readlink -f {input.forward}) {output.forward} 2> {log}; "
-        "ln -s $(readlink -f {input.reverse}) {output.reverse} 2>> {log}"
+        "ln --symbolic $(readlink --canonicalize {input.forward}) {output.forward} 2> {log}; "
+        "ln --symbolic $(readlink --canonicalize {input.reverse}) {output.reverse} 2>> {log}"
 
 
 
@@ -31,7 +31,7 @@ rule raw_make_links_se_sample:
     benchmark:
         raw + "make_links_se_{sample}.json"
     shell:
-        "ln -s $(readlink -f {input.single}) {output.single} 2> {log}"
+        "ln --symbolic $(readlink --canonicalize {input.single}) {output.single} 2> {log}"
 
 
 rule raw_fastqc_pe_sample:
@@ -52,6 +52,8 @@ rule raw_fastqc_pe_sample:
         raw + "fastqc_pe_{sample}.log"
     benchmark:
         raw + "fastqc_pe_{sample}.json"
+    conda:
+        "raw.yml"
     shell:
         "fastqc "
             "--nogroup "
@@ -74,6 +76,8 @@ rule raw_fastqc_se_sample:
         raw + "fastqc_se_{sample}.log"
     benchmark:
         raw + "fastqc_se_{sample}.json"
+    conda:
+        "raw.yml"
     shell:
         "fastqc "
             "--nogroup "
@@ -105,6 +109,8 @@ rule raw_multiqc:
         raw + "multiqc.log"
     benchmark:
         raw + "multiqc.json"
+    conda:
+        "raw.yml"
     shell:
         "multiqc "
             "--title Raw "
