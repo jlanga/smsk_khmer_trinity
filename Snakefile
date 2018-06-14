@@ -1,22 +1,41 @@
+import copy
+
 shell.prefix("set -euo pipefail;")
+
 
 configfile: "params.yml"
 params = config.copy()
+config = {}
 
 configfile: "samples.yml"
 samples = config.copy()
+config = {}
+
+configfile: "features.yml"
+features = config.copy()
+config = {}
 
 del config
 
+
 singularity: "docker://continuumio/miniconda3:4.4.10"
 
-SAMPLES_PE = samples["samples_pe"] if samples["samples_pe"] is not None else []
-SAMPLES_SE = samples["samples_se"] if samples["samples_se"] is not None else []
 
-SAMPLES = [x for x in SAMPLES_PE] + [x for x in SAMPLES_SE]
+SAMPLES_PE = [
+    sample for sample in samples
+    if samples[sample]["type"] == "PE"
+]
+
+SAMPLES_SE = [
+    sample for sample in samples
+    if samples[sample]["type"] == "SE"
+]
+
+SAMPLES = samples.keys()
 PAIRS = ["pepe", "pese"]
 
 ALL_THREADS = 64
+
 
 snakefiles = "src/snakefiles/"
 
