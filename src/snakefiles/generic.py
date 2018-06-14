@@ -80,7 +80,7 @@ rule multiqc_qc:
         "multiqc --title QC --filename {output.html} {params.folder} 2> {log}"
 
 
-rule multiquc_diginorm:
+rule multiqc_diginorm:
     input:
         files_pe = expand(
             NORM + "{sample}_{pair}_fastqc.{extension}",
