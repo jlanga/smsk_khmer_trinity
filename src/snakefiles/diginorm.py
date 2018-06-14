@@ -23,9 +23,9 @@ rule diginorm_load_into_counting:
     benchmark:
         NORM + "load_into_counting.bmk"
     params:
-        ksize = config["diginorm_params"]["ksize"],
-        max_table_size = config["diginorm_params"]["max_table_size"],
-        n_tables = config["diginorm_params"]["n_tables"]
+        ksize = params["diginorm"]["ksize"],
+        max_table_size = params["diginorm"]["max_table_size"],
+        n_tables = params["diginorm"]["n_tables"]
     conda:
         "diginorm.yml"
     shell:
@@ -55,10 +55,10 @@ rule diginorm_normalize_by_median_sample_pepe:
     threads:
         ALL_THREADS
     params:
-        cutoff = config["diginorm_params"]["cutoff"],
-        ksize = config["diginorm_params"]["ksize"],
-        n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"],
+        cutoff = params["diginorm"]["cutoff"],
+        ksize = params["diginorm"]["ksize"],
+        n_tables = params["diginorm"]["n_tables"],
+        max_table_size = params["diginorm"]["max_table_size"],
     log:
         NORM + "normalize_by_median_{sample}.pepe.log"
     benchmark:
@@ -93,10 +93,10 @@ rule diginorm_normalize_by_median_sample_pese:
     threads:
         ALL_THREADS
     params:
-        cutoff = config["diginorm_params"]["cutoff"],
-        ksize = config["diginorm_params"]["ksize"],
-        n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"]
+        cutoff = params["diginorm"]["cutoff"],
+        ksize = params["diginorm"]["ksize"],
+        n_tables = params["diginorm"]["n_tables"],
+        max_table_size = params["diginorm"]["max_table_size"]
     log:
         NORM + "normalize_by_median_{sample}_pese.log"
     benchmark:
@@ -130,10 +130,10 @@ rule diginorm_normalize_by_median_sample_se:
     threads:
         ALL_THREADS
     params:
-        cutoff = config["diginorm_params"]["cutoff"],
-        n_tables = config["diginorm_params"]["n_tables"],
-        max_table_size = config["diginorm_params"]["max_table_size"],
-        ksize = config["diginorm_params"]["ksize"]
+        cutoff = params["diginorm"]["cutoff"],
+        n_tables = params["diginorm"]["n_tables"],
+        max_table_size = params["diginorm"]["max_table_size"],
+        ksize = params["diginorm"]["ksize"]
     log:
         NORM + "normalize_by_median_{sample}_se.log"
     benchmark:

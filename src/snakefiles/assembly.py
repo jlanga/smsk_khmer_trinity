@@ -79,7 +79,7 @@ rule assembly_run_trinity:
     priority:
         50
     params:
-        memory = config["trinity_params"]["memory"],
+        memory = params["trinity"]["memory"],
         outdir = ASSEMBLY + "trinity_out_dir"
     log:
         ASSEMBLY + "run_trinity.log"

@@ -38,7 +38,7 @@ rule qc_trimmomatic_pe:
         unpaired_2 = QC + "{sample}_4.fq.gz",
         adaptor = get_adaptor_pe,
         phred = get_phred_pe,
-        trimmomatic_params = config["trimmomatic_params"]
+        trimmomatic_params = params["trimmomatic"]["extra"]
     log:
         QC + "trimmomatic_pe_{sample}.log"
     benchmark:
@@ -102,7 +102,7 @@ rule qc_trimmomatic_se:
     params:
         adaptor = get_adaptor_se,
         phred = get_phred_se,
-        trimmomatic_params = config["trimmomatic_params"]
+        trimmomatic_params = params["trimmomatic"]["extra"]
     priority:
         50
     log:
