@@ -1,0 +1,4 @@
+sample	type	forward	reverse	phred	adaptor
+pe1	PE	data/fastq_raw/test1_1.fastq.gz	data/fastq_raw/test1_2.fastq.gz	phred33	data/adapters/TruSeq3-PE-2.fa
+pe2	PE	data/fastq_raw/test2_1.fastq.gz	data/fastq_raw/test2_2.fastq.gz	phred33	data/adapters/TruSeq3-PE-2.fa
+se3	SE	data/fastq_raw/test3.fastq.gz	NA	phred33	data/adapters/TruSeq3-PE-2.fa

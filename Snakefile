@@ -1,4 +1,5 @@
 import copy
+import pandas as pd
 
 shell.prefix("set -euo pipefail;")
 
@@ -7,31 +8,22 @@ configfile: "params.yml"
 params = config.copy()
 config = {}
 
-configfile: "samples.yml"
-samples = config.copy()
-config = {}
-
 configfile: "features.yml"
 features = config.copy()
 config = {}
 
 del config
 
+samples = pd.read_table("samples.tsv").set_index("sample")
+
 
 singularity: "docker://continuumio/miniconda3:4.4.10"
 
 
-SAMPLES_PE = [
-    sample for sample in samples
-    if samples[sample]["type"] == "PE"
-]
+SAMPLES_PE = samples[samples["type"] == "PE"].index.tolist()
+SAMPLES_SE = samples[samples["type"] == "SE"].index.tolist()
 
-SAMPLES_SE = [
-    sample for sample in samples
-    if samples[sample]["type"] == "SE"
-]
-
-SAMPLES = samples.keys()
+SAMPLES = SAMPLES_PE + SAMPLES_SE
 PAIRS = ["pepe", "pese"]
 
 ALL_THREADS = 64
