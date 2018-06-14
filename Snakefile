@@ -26,7 +26,7 @@ SAMPLES_SE = samples[samples["type"] == "SE"].index.tolist()
 SAMPLES = SAMPLES_PE + SAMPLES_SE
 PAIRS = ["pepe", "pese"]
 
-ALL_THREADS = 64
+ALL_THREADS = 24
 
 
 snakefiles = "src/snakefiles/"

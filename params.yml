@@ -15,5 +15,6 @@ diginorm:
     n_tables: "4"  # n_tables * max_table_size must be < your RAM in bytes
     max_table_size: "1e8"
 
+
 trinity:
     memory: "2G"
