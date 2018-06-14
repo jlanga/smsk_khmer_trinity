@@ -8,9 +8,9 @@ rule fastqc:
         html = protected("{filename}_fastqc.html"),
         zip = protected("{filename}_fastqc.zip")
     log:
-        os.path.dirname("{prefix}.fq.gz") + "fastqc_{filename}.log"
+        "{filename}_fastqc.log"
     benchmark:
-        os.path.dirname("{prefix}.fq.gz") + "fastqc_{filename}.bmk"
+        "{filename}_fastqc.bmk"
     conda:
         "generic.yml"
     shell:
