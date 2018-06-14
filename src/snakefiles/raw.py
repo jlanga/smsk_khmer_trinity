@@ -1,11 +1,11 @@
 def get_path_forward(wildcards):
     """"""
-    return config["samples_pe"][wildcards.sample]["forward"]
+    return samples["samples_pe"][wildcards.sample]["forward"]
 
 
 def get_path_reverse(wildcards):
     """"""
-    return config["samples_pe"][wildcards.sample]["reverse"]
+    return samples["samples_pe"][wildcards.sample]["reverse"]
 
 
 rule raw_make_links_pe:
@@ -36,7 +36,7 @@ rule raw_make_links_pe:
 
 def get_path_single(wildcards):
     """"""
-    return config["samples_se"][wildcards.sample]["single"]
+    return samples["samples_se"][wildcards.sample]["single"]
 
 
 rule raw_make_links_se:

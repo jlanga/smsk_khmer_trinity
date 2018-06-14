@@ -1,4 +1,4 @@
-# Configuration for smsk_khmer_trinity
+# Configuration file with information about the samples_se
 ---
 samples_pe:
     pe1:

@@ -1,11 +1,11 @@
 def get_adaptor_pe(wildcards):
     """Get the adaptor from a sample"""
-    return config["samples_pe"][wildcards.sample]["adaptor"]
+    return samples["samples_pe"][wildcards.sample]["adaptor"]
 
 
 def get_phred_pe(wildcards):
     """Get the adaptor from a sample"""
-    return config["samples_pe"][wildcards.sample]["phred"]
+    return samples["samples_pe"][wildcards.sample]["phred"]
 
 
 rule qc_trimmomatic_pe:
@@ -76,12 +76,12 @@ rule qc_trimmomatic_pe:
 
 def get_adaptor_se(wildcards):
     """Get the adaptor from a sample"""
-    return config["samples_se"][wildcards.sample]["adaptor"]
+    return samples["samples_se"][wildcards.sample]["adaptor"]
 
 
 def get_phred_se(wildcards):
     """Get the adaptor from a sample"""
-    return config["samples_se"][wildcards.sample]["phred"]
+    return samples["samples_se"][wildcards.sample]["phred"]
 
 
 rule qc_trimmomatic_se:
