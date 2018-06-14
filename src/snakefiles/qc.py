@@ -13,7 +13,7 @@ rule qc_trimmomatic_pe:
     Run trimmomatic on paired end mode to eliminate Illumina adaptors and
     remove low quality regions and reads.
     Inputs _1 and _2 are piped through gzip/pigz.
-    Outputs _1 and _2 are piped to gzip/pigz (level 9).
+    Outputs _1 and _2 are piped to gzip/pigz (level 1, will be deleted).
     Outputs _3 and _4 are compressed with the builtin compressor from
     Trimmomatic. Further on they are catted and compressed with gzip/pigz
     (level 9).
