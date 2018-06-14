@@ -8,7 +8,7 @@ SAMPLES_PE = config["samples_pe"] if config["samples_pe"] is not None else []
 SAMPLES_SE = config["samples_se"] if config["samples_se"] is not None else []
 
 SAMPLES = [x for x in SAMPLES_PE] + [x for x in SAMPLES_SE]
-PAIRS = ["pe_pe", "pe_se"]
+PAIRS = ["pepe", "pese"]
 
 ALL_THREADS = 64
 
@@ -16,6 +16,7 @@ snakefiles = "src/snakefiles/"
 
 include: snakefiles + "folders.py"
 include: snakefiles + "clean.py"
+include: snakefiles + "generic.py"
 include: snakefiles + "raw.py"
 include: snakefiles + "qc.py"
 include: snakefiles + "diginorm.py"

@@ -3,8 +3,6 @@ name: qc
 channels:
   - bioconda
 dependencies:
-  - fastqc=0.11.5
   - trimmomatic=0.36
-  - multiqc=0.8
   - pigz=2.3
   - khmer=2.0

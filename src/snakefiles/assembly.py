@@ -1,15 +1,12 @@
 rule assembly_split_pe_files:
     """
-    Split pe_pe files into _1 and _2.
+    Split pepe files into _1 and _2.
     """
     input:
-        fastq_pe = NORM + "{sample}.final.pe_pe.fq.gz"
+        fastq_pe = NORM + "{sample}_pepe.fq.gz"
     output:
         left = ASSEMBLY + "{sample}_1.fq.gz",
         right = ASSEMBLY + "{sample}_2.fq.gz"
-    params:
-        left = "{sample}.final.pe_pe.fq.gz.1",
-        right = "{sample}.final.pe_pe.fq.gz.2"
     log:
         ASSEMBLY + "split_pe_files_{sample}.log"
     benchmark:
@@ -47,11 +44,11 @@ rule assembly_merge_right_and_left:
             ASSEMBLY + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
         ) if SAMPLES_PE else ["/dev/null"],
-        single = expand(  # pe_se
-            NORM + "{sample}.final.pe_se.fq.gz",
+        single = expand(  # pese
+            NORM + "{sample}_pese.fq.gz",
             sample=SAMPLES_PE
         ) + expand(  # se
-            NORM + "{sample}.final.se.fq.gz",
+            NORM + "{sample}_se.fq.gz",
             sample=SAMPLES_SE
         )
     output:
@@ -132,21 +129,3 @@ rule assembly_gene_to_trans_map:
     shell:
         "get_Trinity_gene_to_trans_map.pl < {input.fasta} > {output.tsv} "
         "2> {log}"
-
-
-rule assembly_index_trinity:
-    """
-    Create a samtool index for the assembly
-    """
-    input:
-        fasta = ASSEMBLY + "Trinity.fasta"
-    output:
-        fai = ASSEMBLY + "Trinity.fasta.fai"
-    log:
-        ASSEMBLY + "index.log"
-    benchmark:
-        ASSEMBLY + "index.bmk"
-    conda:
-        "assembly.yml"
-    shell:
-        "samtools faidx {input.fasta} 2> {log} 1>&2"

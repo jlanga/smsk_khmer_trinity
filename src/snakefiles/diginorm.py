@@ -6,11 +6,11 @@ rule diginorm_load_into_counting:
     """
     input:
         fastqs = expand(
-            QC + "{sample}.final.{pair}.fq.gz",
+            QC + "{sample}_{pair}.fq.gz",
             sample=SAMPLES_PE,
             pair=PAIRS
         ) + expand(
-            QC + "{sample}.final.se.fq.gz",
+            QC + "{sample}_se.fq.gz",
             sample=SAMPLES_SE
         )
     output:
@@ -42,16 +42,16 @@ rule diginorm_load_into_counting:
         """
 
 
-rule diginorm_normalize_by_median_sample_pe_pe:
+rule diginorm_normalize_by_median_sample_pepe:
     """
     Normalizes by median EACH FILE.
     Therefore one loads once per file the hash table.
     """
     input:
-        fastq = QC + "{sample}.final.pe_pe.fq.gz",
+        fastq = QC + "{sample}_pepe.fq.gz",
         table = NORM + "diginorm_table.kh"
     output:
-        fastq = temp(NORM + "{sample}.keep.pe_pe.fq.gz")
+        fastq = temp(NORM + "{sample}_pepe.keep.fq.gz")
     threads:
         ALL_THREADS
     params:
@@ -60,9 +60,9 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         n_tables = config["diginorm_params"]["n_tables"],
         max_table_size = config["diginorm_params"]["max_table_size"],
     log:
-        NORM + "normalize_by_median_{sample}.pe_pe.log"
+        NORM + "normalize_by_median_{sample}.pepe.log"
     benchmark:
-        NORM + "normalize_by_median_{sample}.pe_pe.bmk"
+        NORM + "normalize_by_median_{sample}.pepe.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -80,16 +80,16 @@ rule diginorm_normalize_by_median_sample_pe_pe:
         """
 
 
-rule diginorm_normalize_by_median_sample_pe_se:
+rule diginorm_normalize_by_median_sample_pese:
     """
     Normalizes by median EACH FILE.
     Therefore one loads once per file the hash table.
     """
     input:
-        fastq = QC + "{sample}.final.pe_se.fq.gz",
+        fastq = QC + "{sample}_pese.fq.gz",
         table = NORM + "diginorm_table.kh"
     output:
-        fastq = temp(NORM + "{sample}.keep.pe_se.fq.gz")
+        fastq = temp(NORM + "{sample}_pese.keep.fq.gz")
     threads:
         ALL_THREADS
     params:
@@ -98,9 +98,9 @@ rule diginorm_normalize_by_median_sample_pe_se:
         n_tables = config["diginorm_params"]["n_tables"],
         max_table_size = config["diginorm_params"]["max_table_size"]
     log:
-        NORM + "normalize_by_median_{sample}_pe_se.log"
+        NORM + "normalize_by_median_{sample}_pese.log"
     benchmark:
-        NORM + "normalize_by_median_{sample}_pe_se.bmk"
+        NORM + "normalize_by_median_{sample}_pese.bmk"
     conda:
         "diginorm.yml"
     shell:
@@ -123,10 +123,10 @@ rule diginorm_normalize_by_median_sample_se:
     Therefore one loads once per file the hash table.
     """
     input:
-        fastq = QC + "{sample}.final.se.fq.gz",
+        fastq = QC + "{sample}_se.fq.gz",
         table = NORM + "diginorm_table.kh"
     output:
-        fastq = temp(NORM + "{sample}.keep.se.fq.gz")
+        fastq = temp(NORM + "{sample}_se.keep.fq.gz")
     threads:
         ALL_THREADS
     params:
@@ -159,10 +159,10 @@ rule diginorm_filter_abund_sample_pair:
     Removes erroneus k-mers.
     """
     input:
-        fastq = NORM + "{sample}.keep.{pair}.fq.gz",
+        fastq = NORM + "{sample}_{pair}.keep.fq.gz",
         table = NORM + "diginorm_table.kh"
     output:
-        fastq = temp(NORM + "{sample}.abundfilt.{pair}.fq.gz")
+        fastq = temp(NORM + "{sample}_{pair}.abundfilt.fq.gz")
     threads:
         ALL_THREADS
     priority:
@@ -190,10 +190,10 @@ rule diginorm_extract_paired_reads_sample:
     Split the filtered reads into PE and SE.
     """
     input:
-        fastq = NORM + "{sample}.abundfilt.pe_pe.fq.gz"
+        fastq = NORM + "{sample}_pepe.abundfilt.fq.gz"
     output:
-        fastq_pe = protected(NORM + "{sample}.final.pe_pe.fq.gz"),
-        fastq_se = temp(NORM + "{sample}.temp.pe_se.fq.gz")
+        fastq_pe = protected(NORM + "{sample}_pepe.fq.gz"),
+        fastq_se = temp(NORM + "{sample}_pese.temp.fq.gz")
     threads:
         1
     log:
@@ -217,10 +217,10 @@ rule diginorm_merge_pe_single_reads_sample:
     Put together the SE reads from the same sample
     """
     input:
-        from_norm = NORM + "{sample}.abundfilt.pe_se.fq.gz",
-        from_paired = NORM + "{sample}.temp.pe_se.fq.gz"
+        from_norm = NORM + "{sample}_pese.abundfilt.fq.gz",
+        from_paired = NORM + "{sample}_pese.temp.fq.gz"
     output:
-        fastq = protected(NORM + "{sample}.final.pe_se.fq.gz")
+        fastq = protected(NORM + "{sample}_pese.fq.gz")
     log:
         NORM + "merge_single_reads_{sample}.log"
     benchmark:
@@ -244,9 +244,9 @@ rule dignorm_get_former_se_reads_sample:
     to their final position.
     """
     input:
-        single = NORM + "{sample}.abundfilt.se.fq.gz"
+        single = NORM + "{sample}_se.abundfilt.fq.gz"
     output:
-        single = protected(NORM + "{sample}.final.se.fq.gz")
+        single = protected(NORM + "{sample}_se.fq.gz")
     log:
         NORM + "get_former_se_reads_{sample}.log"
     benchmark:
@@ -260,66 +260,14 @@ rule dignorm_get_former_se_reads_sample:
 rule diginorm_results:
     input:
         expand(
-            NORM + "{sample}.final.{pair}.fq.gz",
+            NORM + "{sample}_{pair}.fq.gz",
             sample=SAMPLES_PE,
             pair=PAIRS
         ),
         expand(
-            NORM + "{sample}.final.se.fq.gz",
+            NORM + "{sample}_se.fq.gz",
             sample=SAMPLES_SE
         )
-
-
-rule diginorm_fastqc_sample_pair:
-    """
-    Do FASTQC reports
-    Uses --nogroup!
-    One thread per fastq.gz file
-    """
-    input:
-        fastq = NORM + "{sample}.final.{pair}.fq.gz"
-    output:
-        zip = protected(NORM + "{sample}.final.{pair}_fastqc.zip"),
-        html = protected(NORM + "{sample}.final.{pair}_fastqc.html")
-    log:
-        NORM + "fastqc_{sample}_{pair}.log"
-    benchmark:
-        NORM + "fastqc_{sample}_{pair}.bmk"
-    conda:
-        "diginorm.yml"
-    shell:
-        "fastqc --nogroup --outdir {NORM} {input.fastq} > {log} 2>&1"
-
-
-rule diginorm_multiqc:
-    input:
-        files_pe = expand(
-            NORM + "{sample}.final.{pair}_fastqc.{extension}",
-            sample=SAMPLES_PE,
-            pair="pe_pe pe_se".split(),
-            extension="html zip".split()
-        ),
-        files_se = expand(
-            NORM + "{sample}.final.se_fastqc.{extension}",
-            sample=SAMPLES_SE,
-            extension="html zip".split()
-        )
-    output:
-        html = protected(NORM + "multiqc_report.html")
-    log:
-        NORM + "multiqc.log"
-    benchmark:
-        NORM + "multiqc.bmk"
-    conda:
-        "diginorm.yml"
-    shell:
-        """
-        multiqc \
-            --title Diginorm \
-            --filename {output.html} \
-            {NORM} \
-        2> {log}
-        """
 
 
 rule diginorm_doc:
@@ -330,13 +278,5 @@ rule diginorm_doc:
 rule diginorm:
     '''diginorm_results + diginorm_doc'''
     input:
-        files_pe = expand(
-            NORM + "{sample}.final.{pair}.fq.gz",
-            sample=SAMPLES_PE,
-            pair=PAIRS
-        ),
-        files_se = expand(
-            NORM + "{sample}.final.se.fq.gz",
-            sample=SAMPLES_SE
-        ),
-        html = NORM + "multiqc_report.html"
+        rules.diginorm_results.input,
+        rules.diginorm_doc.input
