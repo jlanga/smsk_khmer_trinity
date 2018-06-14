@@ -24,49 +24,40 @@ rule assembly_split_pe_files:
         """
 
 
-rule assembly_merge_right_and_left:
-    """
-    Generate the left.fq and right.fq
-    left.fq = /1 reads from PE + all SE reads
-    right.fq = /2 reads form PE
-    Forced the use of gzip because pigz doesn't have --force option.
-        --force is required because /dev/null isn't a file, doesn't even
-        have an end, and isn't compressed.
-    Test if SAMPLES_PE is empty because gzip/pigz may because otherwise
-        it may be waiting something from stdout.
-    """
+rule assembly_merge_left:
     input:
-        forward = expand(
+        expand(
             ASSEMBLY + "{sample}_1.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE else ["/dev/null"],
-        reverse = expand(
+        ) if SAMPLES_PE else ["/dev/null"]
+    output: ASSEMBLY + "left.fq"
+    log: ASSEMBLY + "merge_left.log"
+    benchmark: ASSEMBLY + "merge_left.bmk"
+    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
+
+
+rule assembly_merge_right:
+    input:
+        expand(
             ASSEMBLY + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE else ["/dev/null"],
-        single = expand(  # pese
-            NORM + "{sample}_pese.fq.gz",
+        ) if SAMPLES_PE else ["/dev/null"]
+    output: ASSEMBLY + "right.fq"
+    log: ASSEMBLY + "merge_right.log"
+    benchmark: ASSEMBLY + "merge_right.bmk"
+    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
+
+
+rule assembly_merge_single:
+    input:
+        expand(
+            ASSEMBLY + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
-        ) + expand(  # se
-            NORM + "{sample}_se.fq.gz",
-            sample=SAMPLES_SE
-        )
-    output:
-        left = ASSEMBLY + "left.fq",
-        right = ASSEMBLY + "right.fq",
-        single = ASSEMBLY + "single.fq"
-    log:
-        ASSEMBLY + "merge_right_and_left.log"
-    benchmark:
-        ASSEMBLY + "merge_right_and_left.bmk"
-    conda:
-        "assembly.yml"
-    shell:
-        """
-        gzip --decompress --stdout {input.forward} > {output.left} 2> {log}
-        gzip --decompress --stdout {input.reverse} > {output.right} 2>> {log}
-        gzip --decompress --stdout {input.single} > {output.single} 2>> {log}
-        """
+        ) if SAMPLES_PE else ["/dev/null"]
+    output: ASSEMBLY + "single.fq"
+    log: ASSEMBLY + "merge_single.log"
+    benchmark: ASSEMBLY + "merge_single.bmk"
+    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
 
 
 rule assembly_run_trinity:
