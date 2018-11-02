@@ -1,0 +1,7 @@
+# Environment for quality control of the mapping of the reads to the assembly
+name: mapping
+channels:
+  - bioconda
+dependencies:
+  - bowtie2=2.3.4
+  - samtools=1.9
