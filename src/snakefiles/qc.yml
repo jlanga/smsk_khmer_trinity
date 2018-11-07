@@ -1,4 +1,5 @@
 # Environment for quality control of the reads: trimmomatic + fastqc
+---
 name: qc
 channels:
   - bioconda

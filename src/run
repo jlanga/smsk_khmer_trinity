@@ -3,4 +3,4 @@
 set -euo pipefail
 
 # Just run it
-snakemake --use-conda -j
+snakemake --use-conda "$@"

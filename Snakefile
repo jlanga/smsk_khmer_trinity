@@ -26,7 +26,7 @@ SAMPLES_SE = samples[samples["type"] == "SE"].index.tolist()
 SAMPLES = SAMPLES_PE + SAMPLES_SE
 PAIRS = ["pepe", "pese"]
 
-ALL_THREADS = 64
+ALL_THREADS = 24
 
 
 snakefiles = "src/snakefiles/"
@@ -38,6 +38,7 @@ include: snakefiles + "raw.py"
 include: snakefiles + "qc.py"
 include: snakefiles + "diginorm.py"
 include: snakefiles + "assembly.py"
+include: snakefiles + "mapping.py"
 
 rule all:
     """
@@ -49,4 +50,5 @@ rule all:
         RAW + "multiqc_report.html",
         QC + "multiqc_report.html",
         NORM + "multiqc_report.html",
-        ASSEMBLY + "Trinity.fasta"
+        ASSEMBLY + "Trinity.fasta",
+        rules.mapping.input

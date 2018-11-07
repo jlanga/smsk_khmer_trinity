@@ -8,9 +8,9 @@ rule fastqc:
         html = protected("{filename}_fastqc.html"),
         zip = protected("{filename}_fastqc.zip")
     log:
-        os.path.dirname("{prefix}.fq.gz") + "fastqc_{filename}.log"
+        "{filename}_fastqc.log"
     benchmark:
-        os.path.dirname("{prefix}.fq.gz") + "fastqc_{filename}.bmk"
+        "{filename}_fastqc.bmk"
     conda:
         "generic.yml"
     shell:
@@ -80,7 +80,7 @@ rule multiqc_qc:
         "multiqc --title QC --filename {output.html} {params.folder} 2> {log}"
 
 
-rule multiquc_diginorm:
+rule multiqc_diginorm:
     input:
         files_pe = expand(
             NORM + "{sample}_{pair}_fastqc.{extension}",
