@@ -29,11 +29,25 @@ rule assembly_merge_left:
         expand(
             ASSEMBLY + "{sample}_1.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE else ["/dev/null"]
+        ),
+        expand(
+            NORM + "{sample}_pese.fq.gz",
+            sample=SAMPLES_PE
+        ),
+        expand(
+            NORM + "{sample}_se.fq.gz",
+            sample=SAMPLES_SE
+        )
     output: ASSEMBLY + "left.fq"
     log: ASSEMBLY + "merge_left.log"
     benchmark: ASSEMBLY + "merge_left.bmk"
-    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
+    shell:
+        """
+        touch {output} 2> {log}
+        for file in {input}; do
+            gzip --decompress --stdout $file >> {output} 2>> {log}
+        done
+        """
 
 
 rule assembly_merge_right:
@@ -41,24 +55,33 @@ rule assembly_merge_right:
         expand(
             ASSEMBLY + "{sample}_2.fq.gz",
             sample=SAMPLES_PE
-        ) if SAMPLES_PE else ["/dev/null"]
+        )
     output: ASSEMBLY + "right.fq"
     log: ASSEMBLY + "merge_right.log"
     benchmark: ASSEMBLY + "merge_right.bmk"
-    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
+    shell:
+        """
+        touch {output} 2> {log}
+        for file in {input}; do
+            gzip --decompress --stdout $file >> {output} 2>> {log}
+        done
+        """
 
 
-rule assembly_merge_single:
-    input:
-        expand(
-            ASSEMBLY + "{sample}_2.fq.gz",
-            sample=SAMPLES_PE
-        ) if SAMPLES_PE else ["/dev/null"]
-    output: ASSEMBLY + "single.fq"
-    log: ASSEMBLY + "merge_single.log"
-    benchmark: ASSEMBLY + "merge_single.bmk"
-    shell: "gzip --decompress --stdout {input} > {output} 2> {log}"
 
+# rule assembly_merge_single:
+#     input:
+#
+#     output: ASSEMBLY + "left.fq"
+#     log: ASSEMBLY + "merge_single.log"
+#     benchmark: ASSEMBLY + "merge_single.bmk"
+#     shell:
+#         """
+#         touch {output} 2> {log}
+#         for file in {input}; do
+#             gzip --decompress --stdout $file >> {output} 2>> {log}
+#         done
+#         """
 
 rule assembly_run_trinity:
     """
@@ -71,7 +94,7 @@ rule assembly_run_trinity:
     input:
         left = ASSEMBLY + "left.fq",
         right = ASSEMBLY + "right.fq",
-        # single = ASSEMBLY + "single.fq"
+        #single = ASSEMBLY + "single.fq"
     output:
         fasta = protected(ASSEMBLY + "Trinity.fasta")
     threads:
