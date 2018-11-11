@@ -19,7 +19,7 @@ rule mapping_index:
         "2> {log} 1>&2"
 
 
-rule mapping_bowtie2:
+rule mapping_bowtie2_pe:
     """
     Map reads with bowtie
     """
@@ -29,7 +29,7 @@ rule mapping_bowtie2:
         pe_se = QC + "{sample}_pese.fq.gz",
         indexes = rules.mapping_index.output.indexes
     output:
-        cram = MAPPING + "{sample}.cram"
+        cram = MAPPING + "{sample}.pe.cram"
     log:
         MAPPING + "{sample}.log"
     benchmark:
@@ -46,7 +46,7 @@ rule mapping_bowtie2:
         "   --threads {threads}"
         "   --no-unal"
         "   --local"
-        "   --rg {params.sample}"
+        "   --rg-id {params.sample}"
         "   -x {params.index_prefix}"
         "   --interleaved {input.pe_pe}"
         "   -U {input.pe_se}"
@@ -60,9 +60,52 @@ rule mapping_bowtie2:
         "2> {log} 1>&2"
 
 
+rule mapping_bowtie2_se:
+    """
+    Map reads with bowtie
+    """
+    input:
+        fasta = ASSEMBLY + "Trinity.fasta",
+        se = QC + "{sample}_se.fq.gz",
+        indexes = rules.mapping_index.output.indexes
+    output:
+        cram = MAPPING + "{sample}.se.cram"
+    log:
+        MAPPING + "{sample}.log"
+    benchmark:
+        MAPPING + "{sample}.bmk"
+    params:
+        sample = "{sample}",
+        index_prefix = ASSEMBLY + "Trinity"
+    conda:
+        "mapping.yml"
+    threads:
+        4
+    shell:
+        "(bowtie2"
+        "   --threads {threads}"
+        "   --no-unal"
+        "   --local"
+        "   --rg-id {params.sample}"
+        "   -x {params.index_prefix}"
+        "   -U {input.se}"
+        "| samtools sort"
+        "   -l 9"
+        "   -@ {threads}"
+        "   --reference {input.fasta}"
+        "   -o {output.cram}"
+        "   --output-fmt CRAM"
+        "   -)"
+        "2> {log} 1>&2"
+
+
 rule mapping:
     input:
         expand(
-            MAPPING + "{sample}.cram",
+            MAPPING + "{sample}.pe.cram",
             sample=SAMPLES_PE
-        )
+        ),
+        expand(
+            MAPPING + "{sample}.se.cram",
+            sample=SAMPLES_SE
+        ),
