@@ -2,7 +2,9 @@
 ---
 name: diginorm
 channels:
-  - bioconda
+    - conda-forge
+    - bioconda
+    - defaults
 dependencies:
-  - khmer=2.0
-  - pigz=2.3
+    - khmer=2.0
+    - pigz=2.3

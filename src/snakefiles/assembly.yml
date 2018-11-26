@@ -1,9 +1,11 @@
 # Environment to assemble with trinity
 ---
 channels:
-  - bioconda
+    - conda-forge
+    - bioconda
+    - defaults
 dependencies:
-  - trinity=2.3.2
-  - khmer=2.0
-  - bowtie2=2.3.2
-  - pigz=2.3
+    - trinity=2.3.2
+    - khmer=2.0
+    - bowtie2=2.3.2
+    - pigz=2.3

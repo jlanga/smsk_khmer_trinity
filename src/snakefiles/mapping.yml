@@ -2,7 +2,9 @@
 ---
 name: mapping
 channels:
-  - bioconda
+    - conda-forge
+    - bioconda
+    - defaults
 dependencies:
-  - bowtie2=2.3.4
-  - samtools=1.9
+    - bowtie2=2.3.4
+    - samtools=1.9
