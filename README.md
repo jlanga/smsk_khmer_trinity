@@ -2,7 +2,6 @@
 
 [![Build Status](https://travis-ci.org/jlanga/smsk_khmer_trinity.svg?branch=master)](https://travis-ci.org/jlanga/smsk_khmer_trinity)
 
-
 ## 1. Description
 
 This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
@@ -13,25 +12,23 @@ This is a workflow for _de novo_ transcriptome assembly with Illumina reads. It
 
 3. Assembles with `trinity`
 
-
 ## 2. First steps
 
 Just follow what is inside the `.travis.yml`
 
-0. Install `conda`
+1. Install `conda`
 
-1. Clone this repo
+2. Clone this repo
 
-2. Add your samples to `config.yaml`
+3. Add your samples to `config.yaml`
 
-3. Run snakemake: `snakemake --use-conda -j`
-
+4. Run snakemake: `snakemake --use-conda -j`
 
 ## 3. File organization
 
 The hierarchy of the folder is the one described in [A Quick Guide to Organizing Computational Biology Projects](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1000424):
 
-```
+```none
 smsk_khmer_trinity
 ├── bin: binaries, scripts and environment files.
 ├── data: raw data, hopefully links to backup data.
@@ -52,7 +49,6 @@ smsk_khmer_trinity
 "Just" edit the `config.yaml` with the paths to your fastq files and change parameters. In the section `diginorm_params` \ `max_table_size` type `4e9` because it's anoyingly slow to do tests with 16Gb of RAM.
 
 Also raise Trinity's maximum memory usage if you need it.
-
 
 ## Links, References and Bibliography
 
